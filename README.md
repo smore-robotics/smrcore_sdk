@@ -54,12 +54,8 @@ smrcore_sdk-cpp-windows-x86_64-v0.0.1.tar.gz
 rcore_sdk_py-0.0.1-<python-tags>.whl
 ```
 
-The scripts use GitHub CLI. If the repository is private, authenticate first:
-
-```bash
-gh auth login
-./scripts/download.sh
-```
+`scripts/download.sh` downloads the Linux C++ SDK directly from the public
+GitHub Release URL.
 
 ## C++ Integration
 
@@ -108,11 +104,11 @@ Download the wheel from the same GitHub Release, then install it:
 
 ```bash
 VERSION=0.0.1
-gh release download v${VERSION} \
-  --repo smore-robotics/smrore_sdk \
-  --pattern "rcore_sdk_py-${VERSION}-*.whl" \
-  --dir .
-pip install rcore_sdk_py-${VERSION}-*.whl
+PY_TAG=cp310-cp310-linux_x86_64
+curl -L --fail \
+  "https://github.com/smore-robotics/smrore_sdk/releases/download/v${VERSION}/rcore_sdk_py-${VERSION}-${PY_TAG}.whl" \
+  -o rcore_sdk_py-${VERSION}-${PY_TAG}.whl
+pip install rcore_sdk_py-${VERSION}-${PY_TAG}.whl
 python -c "import rcore_sdk; from rcore_sdk import _native; print(_native.linked_sdk())"
 ```
 
@@ -125,7 +121,7 @@ the release version used by the controller/runtime.
 |---------|-------------|
 | `01_connect` | Initialize / IsConnected / Shutdown |
 | `02_read_state` | Read robot state and motor status |
-| `03_movej` | Small joint-space motion |
+| `03_movej` | Fixed conservative joint-space motion |
 | `04_movel` | Conservative Cartesian line motion |
 
 ## Compatibility

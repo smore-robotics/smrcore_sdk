@@ -14,10 +14,10 @@ runtime SDK version:
 
 ```bash
 VERSION=0.0.1
-gh release download v${VERSION} \
-  --repo smore-robotics/smrore_sdk \
-  --pattern "rcore_sdk_py-${VERSION}-*.whl" \
-  --dir .
-pip install rcore_sdk_py-${VERSION}-*.whl
+PY_TAG=cp310-cp310-linux_x86_64
+curl -L --fail \
+  "https://github.com/smore-robotics/smrore_sdk/releases/download/v${VERSION}/rcore_sdk_py-${VERSION}-${PY_TAG}.whl" \
+  -o rcore_sdk_py-${VERSION}-${PY_TAG}.whl
+pip install rcore_sdk_py-${VERSION}-${PY_TAG}.whl
 python -c "import rcore_sdk; from rcore_sdk import _native; print(_native.linked_sdk())"
 ```

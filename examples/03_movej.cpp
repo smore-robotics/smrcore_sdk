@@ -2,8 +2,8 @@
 //
 // Usage: ./03_movej [robot_ip]
 //
-// Safety note: this example moves J1 by a small offset from the current state.
-// Verify the workspace is clear and emergency stop is reachable before running.
+// Safety note: this example moves to a fixed conservative joint target.
+// Verify this target is safe for your robot before running.
 
 #include "sdk/robot.hpp"
 
@@ -38,13 +38,10 @@ int main(int argc, char **argv)
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
-        const auto state = robot.GetState();
-        rcore::sdk::JointPositions target{};
-        for (size_t i = 0; i < 6; ++i)
-        {
-            target[i] = state.positions[i];
-        }
-        target[0] += 0.05; // Small J1 offset from the current state.
+        // Fixed conservative target [rad]. Check and modify this target before
+        // running on a real robot.
+        rcore::sdk::JointPositions target{0.0, -1.5708, 1.5708,
+                                          -1.5708, -1.5708, 0.0};
 
         std::printf("MoveJ target [rad]:");
         for (size_t i = 0; i < 6; ++i)

@@ -7,15 +7,13 @@ INSTALL_DIR="3rdparty/smrcore_sdk"
 
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd -P)"
 ASSET="smrcore_sdk-cpp-linux-x86_64-v${VERSION}.tar.gz"
+URL="https://github.com/${GITHUB_REPO}/releases/download/v${VERSION}/${ASSET}"
 
 cd "$ROOT_DIR"
 
 echo "Downloading ${ASSET}"
 rm -f "$ASSET"
-gh release download "v${VERSION}" \
-    --repo "$GITHUB_REPO" \
-    --pattern "$ASSET" \
-    --dir .
+curl -L --fail --show-error "$URL" -o "$ASSET"
 
 echo "Extracting to ${INSTALL_DIR}"
 rm -rf "$INSTALL_DIR"
