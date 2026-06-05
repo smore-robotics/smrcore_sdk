@@ -119,6 +119,23 @@ python -c "import rcore_sdk; from rcore_sdk import _native; print(_native.linked
 The `linked_sdk()` output includes the C++ SDK runtime version. It should match
 the release version used by the controller/runtime.
 
+## Python Examples
+
+Python examples mirror the C++ examples and live in `examples_py/`:
+
+```bash
+python examples_py/01_connect.py [robot_ip]
+python examples_py/02_read_state.py [robot_ip]
+```
+
+`03_movej.py` and `04_movel.py` are motion examples. Review the fixed MoveJ
+target and the MoveL TCP offset before running:
+
+```bash
+python examples_py/03_movej.py [robot_ip]
+python examples_py/04_movel.py [robot_ip]
+```
+
 ## Examples
 
 | Example | Description |
@@ -126,7 +143,7 @@ the release version used by the controller/runtime.
 | `01_connect` | Initialize / IsConnected / Shutdown |
 | `02_read_state` | Read robot state and motor status |
 | `03_movej` | Fixed conservative joint-space motion |
-| `04_movel` | Conservative Cartesian line motion |
+| `04_movel` | Short Cartesian line motion from current TCP pose |
 
 ## Compatibility
 

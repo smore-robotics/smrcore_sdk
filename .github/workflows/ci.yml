@@ -73,6 +73,9 @@ jobs:
           assert info["version"] == version
           PY
 
+      - name: Check Python examples
+        run: python3 -m py_compile examples_py/*.py
+
   windows-sdk-smoke:
     runs-on: windows-2022
 
@@ -139,3 +142,10 @@ jobs:
         run: |
           python -m pip install ".\rcore_sdk_py-$env:VERSION-cp310-cp310-win_amd64.whl"
           python -c "import os, rcore_sdk; from rcore_sdk import _native; info = _native.linked_sdk(); print(info); assert rcore_sdk.__version__ == os.environ['VERSION']; assert info['linked'] is True; assert info['version'] == os.environ['VERSION']"
+
+      - name: Check Python examples
+        shell: pwsh
+        run: |
+          Get-ChildItem examples_py -Filter *.py | ForEach-Object {
+            python -m py_compile $_.FullName
+          }

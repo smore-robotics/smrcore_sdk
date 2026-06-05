@@ -2,7 +2,7 @@
 //
 // Usage: ./04_movel [robot_ip]
 //
-// Safety note: this example moves through conservative Cartesian targets.
+// Safety note: this example moves a short distance from the current TCP pose.
 // Verify the workspace is clear and emergency stop is reachable before running.
 
 #include "sdk/robot.hpp"
@@ -37,24 +37,27 @@ int main(int argc, char **argv)
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
-        // Move to a conservative start pose with MoveP, then execute a short
-        // Cartesian line segment with MoveL.
-        rcore::sdk::Vec<double, 3> rpy_zero{0.0, 0.0, 0.0};
-        rcore::sdk::Vec<double, 3> start_translation{0.3, -0.05, 0.45};
-        rcore::sdk::Vec<double, 3> target_translation{0.3, 0.05, 0.45};
-        const auto start =
-            rcore::sdk::Pose::FromEuler(start_translation, rpy_zero);
-        const auto target =
-            rcore::sdk::Pose::FromEuler(target_translation, rpy_zero);
+        // Read the current TCP pose, keep the current orientation, and move
+        // +5 cm along the base-frame Y axis.
+        const auto state = robot.GetState();
+        rcore::sdk::Vec<double, 3> target_translation{
+            state.cartesian_position[0],
+            state.cartesian_position[1] + 0.05,
+            state.cartesian_position[2],
+        };
+        rcore::sdk::Vec<double, 3> target_rpy{
+            state.cartesian_orientation[0],
+            state.cartesian_orientation[1],
+            state.cartesian_orientation[2],
+        };
+        const auto target = rcore::sdk::Pose::FromEuler(target_translation, target_rpy);
 
-        auto move_p = robot.MoveP(start);
-        if (!move_p.IsSuccess())
-        {
-            std::fprintf(stderr, "MoveP to start failed: code=%u msg=%s\n",
-                         move_p.GetErrorCode(), move_p.GetErrorMsg().c_str());
-            robot.Shutdown();
-            return 1;
-        }
+        std::printf("Current TCP [m]: %.4f %.4f %.4f\n",
+                    state.cartesian_position[0], state.cartesian_position[1],
+                    state.cartesian_position[2]);
+        std::printf("MoveL target TCP [m]: %.4f %.4f %.4f\n",
+                    target_translation[0], target_translation[1],
+                    target_translation[2]);
 
         auto result = robot.MoveL(target);
         if (!result.IsSuccess())
