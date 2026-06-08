@@ -7,9 +7,9 @@
 **基于SmartArm SDK,快速构建、集成并部署机器人应用。**
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-1f6feb.svg)](LICENSE)
-[![Docs](https://img.shields.io/badge/Docs-online-2ea043.svg)](https://smore-robotics.github.io/smrore_sdk/zh/)
-[![CI](https://github.com/smore-robotics/smrore_sdk/actions/workflows/ci.yml/badge.svg)](https://github.com/smore-robotics/smrore_sdk/actions/workflows/ci.yml)
-[![Release](https://img.shields.io/github/v/release/smore-robotics/smrore_sdk?label=Release&color=1f6feb)](https://github.com/smore-robotics/smrore_sdk/releases)
+[![Docs](https://img.shields.io/badge/Docs-online-2ea043.svg)](https://smore-robotics.github.io/smrcore_sdk/zh/)
+[![CI](https://github.com/smore-robotics/smrcore_sdk/actions/workflows/ci.yml/badge.svg)](https://github.com/smore-robotics/smrcore_sdk/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/smore-robotics/smrcore_sdk?label=Release&color=1f6feb)](https://github.com/smore-robotics/smrcore_sdk/releases)
 
 [English](README.md) · **简体中文**
 
@@ -25,29 +25,29 @@
 
 安装、使用、完整示例讲解与 C++ API 参考均托管在文档站点。
 
-- **[文档站点](https://smore-robotics.github.io/smrore_sdk/zh/)**
-- **[English docs](https://smore-robotics.github.io/smrore_sdk/)**
-- **[C++ API 参考](https://smore-robotics.github.io/smrore_sdk/api/cpp/)**
+- **[文档站点](https://smore-robotics.github.io/smrcore_sdk/zh/)**
+- **[English docs](https://smore-robotics.github.io/smrcore_sdk/)**
+- **[C++ API 参考](https://smore-robotics.github.io/smrcore_sdk/api/cpp/)**
 
 ## 快速开始
 
 ```bash
-git clone https://github.com/smore-robotics/smrore_sdk.git
-cd smrore_sdk
+git clone https://github.com/smore-robotics/smrcore_sdk.git
+cd smrcore_sdk
 
 ./scripts/download.sh            # 下载最新预编译 C++ SDK
 ./scripts/build.sh               # 构建 C++ 示例
 
-./build/01_connect [robot_ip]    # 省略 robot_ip 即为本机仿真
+./build/basics_connect [robot_ip] # 省略 robot_ip 即为本机仿真
 ```
 
 Python 环境配置与其余示例详见
-[文档站点](https://smore-robotics.github.io/smrore_sdk/zh/)。
+[文档站点](https://smore-robotics.github.io/smrcore_sdk/zh/)。
 
 ## Release 制品
 
 预编译二进制发布在
-**[Releases 页面](https://github.com/smore-robotics/smrore_sdk/releases)**:
+**[Releases 页面](https://github.com/smore-robotics/smrcore_sdk/releases)**:
 
 ```text
 smrcore_sdk-cpp-linux-x86_64-v<version>.tar.gz

@@ -7,9 +7,9 @@
 **Build, integrate, and deploy robot applications on the Smartmore Robot SDK.**
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-1f6feb.svg)](LICENSE)
-[![Docs](https://img.shields.io/badge/Docs-online-2ea043.svg)](https://smore-robotics.github.io/smrore_sdk/)
-[![CI](https://github.com/smore-robotics/smrore_sdk/actions/workflows/ci.yml/badge.svg)](https://github.com/smore-robotics/smrore_sdk/actions/workflows/ci.yml)
-[![Release](https://img.shields.io/github/v/release/smore-robotics/smrore_sdk?label=Release&color=1f6feb)](https://github.com/smore-robotics/smrore_sdk/releases)
+[![Docs](https://img.shields.io/badge/Docs-online-2ea043.svg)](https://smore-robotics.github.io/smrcore_sdk/)
+[![CI](https://github.com/smore-robotics/smrcore_sdk/actions/workflows/ci.yml/badge.svg)](https://github.com/smore-robotics/smrcore_sdk/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/smore-robotics/smrcore_sdk?label=Release&color=1f6feb)](https://github.com/smore-robotics/smrcore_sdk/releases)
 
 **English** · [简体中文](README.zh.md)
 
@@ -27,29 +27,29 @@ code.
 Installation, usage, the full example walkthrough, and the C++ API reference all
 live on the documentation site.
 
-- **[Documentation site](https://smore-robotics.github.io/smrore_sdk/)**
-- **[中文文档](https://smore-robotics.github.io/smrore_sdk/zh/)**
-- **[C++ API reference](https://smore-robotics.github.io/smrore_sdk/api/cpp/)**
+- **[Documentation site](https://smore-robotics.github.io/smrcore_sdk/)**
+- **[中文文档](https://smore-robotics.github.io/smrcore_sdk/zh/)**
+- **[C++ API reference](https://smore-robotics.github.io/smrcore_sdk/api/cpp/)**
 
 ## Quick Start
 
 ```bash
-git clone https://github.com/smore-robotics/smrore_sdk.git
-cd smrore_sdk
+git clone https://github.com/smore-robotics/smrcore_sdk.git
+cd smrcore_sdk
 
 ./scripts/download.sh            # fetch the latest prebuilt C++ SDK
 ./scripts/build.sh               # build the C++ examples
 
-./build/01_connect [robot_ip]    # omit robot_ip for local simulation
+./build/basics_connect [robot_ip] # omit robot_ip for local simulation
 ```
 
 Python setup and the remaining examples are covered on the
-[documentation site](https://smore-robotics.github.io/smrore_sdk/).
+[documentation site](https://smore-robotics.github.io/smrcore_sdk/).
 
 ## Release Assets
 
 Prebuilt binaries are published on the
-**[Releases page](https://github.com/smore-robotics/smrore_sdk/releases)**:
+**[Releases page](https://github.com/smore-robotics/smrcore_sdk/releases)**:
 
 ```text
 smrcore_sdk-cpp-linux-x86_64-v<version>.tar.gz

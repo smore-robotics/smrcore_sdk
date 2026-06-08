@@ -50,8 +50,8 @@ controller/runtime 是兼容版本。
 本机仿真时，示例可以省略 `robot_ip`：
 
 ```bash
-./build/01_connect
-python examples_py/01_connect.py
+./build/basics_connect
+python examples_py/basics/connect.py
 ```
 
 ## 安全说明

@@ -27,7 +27,7 @@ jobs:
 
       - name: Resolve latest release
         run: |
-          url="$(curl -Ls -o /dev/null -w '%{url_effective}' https://github.com/smore-robotics/smrore_sdk/releases/latest)"
+          url="$(curl -Ls -o /dev/null -w '%{url_effective}' https://github.com/smore-robotics/smrcore_sdk/releases/latest)"
           version="${url##*/}"
           version="${version#v}"
           if ! printf '%s\n' "$version" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'; then
@@ -44,16 +44,16 @@ jobs:
 
       - name: Check linked libraries
         run: |
-          ldd build/01_connect | grep librcoresdk
-          ldd build/02_read_state | grep librcoresdk
-          ldd build/03_movej | grep librcoresdk
-          ldd build/04_movel | grep librcoresdk
+          ldd build/basics_connect | grep librcoresdk
+          ldd build/basics_read_state | grep librcoresdk
+          ldd build/motion_movej | grep librcoresdk
+          ldd build/motion_movel | grep librcoresdk
 
       - name: Download Python wheel
         run: |
           PY_TAG=cp310-cp310-linux_x86_64
           curl -L --fail --show-error \
-            "https://github.com/smore-robotics/smrore_sdk/releases/download/v${VERSION}/rcore_sdk_py-${VERSION}-${PY_TAG}.whl" \
+            "https://github.com/smore-robotics/smrcore_sdk/releases/download/v${VERSION}/rcore_sdk_py-${VERSION}-${PY_TAG}.whl" \
             -o "rcore_sdk_py-${VERSION}-${PY_TAG}.whl"
 
       - name: Install and verify Python wheel
@@ -91,7 +91,7 @@ jobs:
       - name: Resolve latest release
         shell: pwsh
         run: |
-          $url = curl.exe -Ls -o NUL -w "%{url_effective}" https://github.com/smore-robotics/smrore_sdk/releases/latest
+          $url = curl.exe -Ls -o NUL -w "%{url_effective}" https://github.com/smore-robotics/smrcore_sdk/releases/latest
           $version = Split-Path $url -Leaf
           $version = $version.TrimStart("v")
           if ($version -notmatch '^[0-9]+\.[0-9]+\.[0-9]+$') {
@@ -103,7 +103,7 @@ jobs:
         shell: pwsh
         run: |
           $asset = "smrcore_sdk-cpp-windows-x86_64-v$env:VERSION.tar.gz"
-          $url = "https://github.com/smore-robotics/smrore_sdk/releases/download/v$env:VERSION/$asset"
+          $url = "https://github.com/smore-robotics/smrcore_sdk/releases/download/v$env:VERSION/$asset"
 
           Remove-Item -Recurse -Force 3rdparty -ErrorAction SilentlyContinue
           New-Item -ItemType Directory -Force 3rdparty/smrcore_sdk | Out-Null
@@ -121,7 +121,7 @@ jobs:
       - name: Check C++ example outputs
         shell: pwsh
         run: |
-          $examples = @("01_connect", "02_read_state", "03_movej", "04_movel")
+          $examples = @("basics_connect", "basics_read_state", "motion_movej", "motion_movel")
           foreach ($example in $examples) {
             $path = "build/Release/$example.exe"
             if (!(Test-Path $path)) {
@@ -134,7 +134,7 @@ jobs:
         run: |
           $pyTag = "cp310-cp310-win_amd64"
           $asset = "rcore_sdk_py-$env:VERSION-$pyTag.whl"
-          $url = "https://github.com/smore-robotics/smrore_sdk/releases/download/v$env:VERSION/$asset"
+          $url = "https://github.com/smore-robotics/smrcore_sdk/releases/download/v$env:VERSION/$asset"
           curl.exe -L --fail --show-error $url -o $asset
 
       - name: Install and verify Python wheel

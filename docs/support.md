@@ -50,8 +50,8 @@ and robot controller/runtime were built from compatible versions.
 For local simulation, omit `robot_ip` in examples:
 
 ```bash
-./build/01_connect
-python examples_py/01_connect.py
+./build/basics_connect
+python examples_py/basics/connect.py
 ```
 
 ## Safety

@@ -3,7 +3,7 @@
 SDK 制品发布在 GitHub Releases：
 
 ```text
-https://github.com/smore-robotics/smrore_sdk/releases
+https://github.com/smore-robotics/smrcore_sdk/releases
 ```
 
 每个版本包含 C++ SDK 压缩包和 Python wheel：
@@ -45,7 +45,7 @@ VERSION=0.0.1 ./scripts/download.sh
 VERSION=0.0.1
 PY_TAG=cp310-cp310-linux_x86_64
 curl -L --fail \
-  "https://github.com/smore-robotics/smrore_sdk/releases/download/v${VERSION}/rcore_sdk_py-${VERSION}-${PY_TAG}.whl" \
+  "https://github.com/smore-robotics/smrcore_sdk/releases/download/v${VERSION}/rcore_sdk_py-${VERSION}-${PY_TAG}.whl" \
   -o rcore_sdk_py-${VERSION}-${PY_TAG}.whl
 pip install rcore_sdk_py-${VERSION}-${PY_TAG}.whl
 ```

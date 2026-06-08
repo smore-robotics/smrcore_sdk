@@ -18,22 +18,22 @@ assets from GitHub Releases and build their applications against those assets.
 ## Quick Start
 
 ```bash
-git clone https://github.com/smore-robotics/smrore_sdk.git
-cd smrore_sdk
+git clone https://github.com/smore-robotics/smrcore_sdk.git
+cd smrcore_sdk
 
 ./scripts/download.sh
 ./scripts/build.sh
 
-./build/01_connect [robot_ip]
-./build/02_read_state [robot_ip]
+./build/basics_connect [robot_ip]
+./build/basics_read_state [robot_ip]
 ```
 
 Omit `robot_ip` for local simulation. Motion examples are also available, but
 review their targets before running:
 
 ```bash
-./build/03_movej [robot_ip]
-./build/04_movel [robot_ip]
+./build/motion_movej [robot_ip]
+./build/motion_movel [robot_ip]
 ```
 
 ## What This Repository Provides

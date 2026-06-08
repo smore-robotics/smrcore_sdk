@@ -1,8 +1,8 @@
 site_name: smrcore_sdk
 site_description: Smartmore Robot SDK documentation
-site_url: https://smore-robotics.github.io/smrore_sdk/
-repo_url: https://github.com/smore-robotics/smrore_sdk
-repo_name: smore-robotics/smrore_sdk
+site_url: https://smore-robotics.github.io/smrcore_sdk/
+repo_url: https://github.com/smore-robotics/smrcore_sdk
+repo_name: smore-robotics/smrcore_sdk
 
 plugins:
   - search

@@ -13,14 +13,14 @@ doxygen doc/Doxyfile
 
 echo
 echo "Local documentation (served under the site_url base path):"
-echo "  http://127.0.0.1:8000/smrore_sdk/"
-echo "  http://127.0.0.1:8000/smrore_sdk/zh/"
-echo "  http://127.0.0.1:8000/smrore_sdk/api/cpp/index.html"
+echo "  http://127.0.0.1:8000/smrcore_sdk/"
+echo "  http://127.0.0.1:8000/smrcore_sdk/zh/"
+echo "  http://127.0.0.1:8000/smrcore_sdk/api/cpp/index.html"
 echo
 echo "GitHub Pages URL after deployment:"
-echo "  https://smore-robotics.github.io/smrore_sdk/"
-echo "  https://smore-robotics.github.io/smrore_sdk/zh/"
-echo "  https://smore-robotics.github.io/smrore_sdk/api/cpp/index.html"
+echo "  https://smore-robotics.github.io/smrcore_sdk/"
+echo "  https://smore-robotics.github.io/smrcore_sdk/zh/"
+echo "  https://smore-robotics.github.io/smrcore_sdk/api/cpp/index.html"
 echo
 
 exec "${MKDOCS_BIN:-mkdocs}" serve

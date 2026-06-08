@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-GITHUB_REPO="smore-robotics/smrore_sdk"
+GITHUB_REPO="smore-robotics/smrcore_sdk"
 VERSION="${VERSION:-latest}"
 INSTALL_DIR="3rdparty/smrcore_sdk"
 
