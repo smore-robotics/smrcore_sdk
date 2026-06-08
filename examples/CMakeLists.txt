@@ -8,14 +8,30 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # The SDK package provides lib/cmake/smrcore_sdk/smrcore_sdkConfig.cmake.
 find_package(smrcore_sdk REQUIRED)
 
+# Examples are grouped by topic. Each entry is "<dir>/<name>"; the executable is
+# named "<dir>_<name>" so targets stay unique across directories.
 set(SMRCORE_SDK_EXAMPLES
-    01_connect
-    02_read_state
-    03_movej
-    04_movel
+    basics/connect
+    basics/read_state
+    basics/error_recovery
+    motion/movej
+    motion/movep
+    motion/movel
+    motion/movec
+    motion/motion_api
+    motion/move_path
+    motion/async_motion
+    motion/servoj
+    motion/servop
+    config/config_limits
+    config/waypoints
+    config/payload
+    compliance/cartesian_impedance
+    compliance/fd_cartesian_admittance
 )
 
 foreach(example ${SMRCORE_SDK_EXAMPLES})
-    add_executable(${example} ${example}.cpp)
-    target_link_libraries(${example} PRIVATE smrcore::sdk)
+    string(REPLACE "/" "_" target_name ${example})
+    add_executable(${target_name} ${example}.cpp)
+    target_link_libraries(${target_name} PRIVATE smrcore::sdk)
 endforeach()

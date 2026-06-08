@@ -1,6 +1,6 @@
-// 01_connect - connection lifecycle: Initialize / IsConnected / Shutdown
+// basics/connect - connection lifecycle: Initialize / IsConnected / Shutdown
 //
-// Usage: ./01_connect [robot_ip]
+// Usage: ./basics_connect [robot_ip]
 //   - Pass a robot IP, such as 192.168.1.100, to connect to a remote robot.
 //   - Omit robot_ip for local simulation.
 

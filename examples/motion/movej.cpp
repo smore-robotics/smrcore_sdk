@@ -1,12 +1,13 @@
-// 03_movej - joint-space motion with MoveJ
+// motion/movej - joint-space motion with MoveJ
 //
-// Usage: ./03_movej [robot_ip]
+// Usage: ./motion_movej [robot_ip]
 //
 // Safety note: this example moves to a fixed conservative joint target.
 // Verify this target is safe for your robot before running.
 
 #include "sdk/robot.hpp"
 
+#include <array>
 #include <chrono>
 #include <cstdio>
 #include <exception>
@@ -37,6 +38,21 @@ int main(int argc, char **argv)
             return 1;
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
+        const std::array<double, 6> safe_velocity{0.1, 0.1, 0.1,
+                                                  0.1, 0.1, 1};
+        auto velocity_result =
+            robot.Config().SetVelocityPercentage(safe_velocity);
+        if (!velocity_result.IsSuccess())
+        {
+            std::fprintf(stderr,
+                         "SetVelocityPercentage(10%%) failed: code=%u msg=%s\n",
+                         velocity_result.GetErrorCode(),
+                         velocity_result.GetErrorMsg().c_str());
+            robot.Shutdown();
+            return 1;
+        }
+        std::printf("Velocity percentage set to 10%%\n");
 
         // Fixed conservative target [rad]. Check and modify this target before
         // running on a real robot.
