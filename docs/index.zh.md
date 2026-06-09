@@ -1,51 +1,54 @@
 # smrcore_sdk
 
-`smrcore_sdk` 是 Smartmore Robot SDK 的公开文档与集成仓库，提供
-Release 下载说明、C++ 与 Python 示例、兼容性说明，以及由 C++ 头文件生成
-的 API 参考文档。
+<div class="smr-hero" markdown>
 
-该仓库不包含 SDK 源码。用户从 GitHub Releases 下载带版本号的 SDK 制品，
-并基于这些制品构建自己的应用。
+**Smartmore Robot SDK** 的公开文档、示例与 C++ API 参考——用 C++ 或 Python
+快速构建、集成并部署机器人应用。
 
-## 开始阅读
+</div>
 
-- [安装](install.md)
-- [使用](usage.md)
-- [示例](examples.md)
-- [支持](support.md)
-- [API 参考](api/index.md)
+<div class="grid cards" markdown>
 
-## 快速开始
+-   :material-rocket-launch:{ .lg .middle } **快速开始**
 
-```bash
-git clone https://github.com/smore-robotics/smrcore_sdk.git
-cd smrcore_sdk
+    ---
 
-./scripts/download.sh
-./scripts/build.sh
+    下载 SDK、构建示例，并运行一个最小程序。
 
-./build/basics_connect [robot_ip]
-./build/basics_read_state [robot_ip]
-```
+    [从这里开始 →](getting-started.md)
 
-本机仿真可以省略 `robot_ip`。运动示例也已提供，但运行前请先检查目标点：
+-   :material-language-cpp:{ .lg .middle } **C++ 示例**
 
-```bash
-./build/motion_movej [robot_ip]
-./build/motion_movel [robot_ip]
-```
+    ---
+
+    可运行的 C++ 示例：基础、运动、配置、柔顺控制。
+
+    [浏览 C++ 示例 →](examples/index.md)
+
+-   :material-language-python:{ .lg .middle } **Python 示例**
+
+    ---
+
+    与 C++ 对齐的可运行 Python 示例。
+
+    [浏览 Python 示例 →](python/examples/index.md)
+
+-   :material-file-document-outline:{ .lg .middle } **API 参考**
+
+    ---
+
+    生成的 C++ API 参考与 Python API 摘要。
+
+    [打开 API 参考 →](api/index.md)
+
+</div>
 
 ## 仓库内容
 
-- 支持平台的 C++ SDK Release 压缩包。
-- 匹配 Python ABI 和平台的 Python wheel。
-- `examples/` 中的 C++ 示例。
-- `examples_py/` 中的 Python 示例。
-- 下载最新 C++ SDK 和构建示例的脚本。
-- 从 C++ SDK 头文件生成的 API 参考。
+- [x] 带版本号的 C++ SDK Release 压缩包与 Python wheel
+- [x] 可运行的 C++ 示例（`examples/`）与 Python 示例（`examples_py/`）
+- [x] 下载最新 C++ SDK 和构建示例的脚本
+- [x] 从 C++ SDK 头文件生成的 API 参考
 
-## 安全提示
-
-机器人是危险设备。运行任何运动示例或用户程序前，请确认目标点对当前机器
-人、工具、负载和工作空间都是安全的。请确认急停可触达，并确保工作空间
-清空。
+该仓库不包含 SDK 源码。用户从 GitHub Releases 下载带版本号的 SDK 制品，并基于
+这些制品构建自己的应用。

@@ -8,8 +8,7 @@ Each example's source file starts with a header comment that is the full
 reference (usage, behaviour, safety). The tables below summarise, per example,
 what it shows, the main APIs, its prerequisites, and when to use it.
 
-> Python examples (`examples_py/`) are being realigned to this same layout and
-> are not listed here yet.
+> Looking for Python? See the [Python Examples](../python/examples/index.md).
 
 ## Recommended Path
 
@@ -28,7 +27,7 @@ If you are new to the SDK, read and run the examples in this order:
 
 ## Basics
 
-See the full source walkthrough: [Basics Examples](examples_basics.md)
+See the full source walkthrough: [Basics Examples](basics.md)
 
 | Source | Shows | Main APIs | Prerequisites | When to use |
 |---|---|---|---|---|
@@ -41,7 +40,7 @@ See the full source walkthrough: [Basics Examples](examples_basics.md)
 All motion examples enable the motors themselves; keep the workspace clear and
 the e-stop reachable. Cartesian examples move a few cm from the current TCP.
 
-See the full source walkthrough: [Motion Examples](examples_motion.md)
+See the full source walkthrough: [Motion Examples](motion.md)
 
 | Source | Shows | Main APIs | Prerequisites | When to use |
 |---|---|---|---|---|
@@ -57,7 +56,7 @@ See the full source walkthrough: [Motion Examples](examples_motion.md)
 
 ## Config
 
-See the full source walkthrough: [Configuration Examples](examples_config.md)
+See the full source walkthrough: [Configuration Examples](config.md)
 
 | Source | Shows | Main APIs | Prerequisites | When to use |
 |---|---|---|---|---|
@@ -70,7 +69,7 @@ See the full source walkthrough: [Configuration Examples](examples_config.md)
 Compliance examples use torque/force control. Start with the conservative
 parameters provided and keep the e-stop reachable.
 
-See the full source walkthrough: [Compliance Examples](examples_compliance.md)
+See the full source walkthrough: [Compliance Examples](compliance.md)
 
 | Source | Shows | Main APIs | Prerequisites | When to use |
 |---|---|---|---|---|
@@ -91,7 +90,8 @@ Omit `robot_ip` for local simulation.
 
 ## Motion and Force-Control Safety
 
-Before running any motion or compliance example, review the target poses and
-parameters in the source file and confirm they are safe for your robot, tool,
-payload, and workspace. Compliance examples use torque control; start with the
-conservative parameters provided and keep the e-stop reachable.
+!!! warning "Safety"
+    Before running any motion or compliance example, review the target poses and
+    parameters in the source file and confirm they are safe for your robot, tool,
+    payload, and workspace. Compliance examples use torque control; start with the
+    conservative parameters provided and keep the e-stop reachable.

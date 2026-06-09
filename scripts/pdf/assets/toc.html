@@ -27,6 +27,8 @@
     color: #b14a40; font-weight: 700; width: 58px; font-size: 18px;
     font-variant-numeric: tabular-nums; }
   .name { flex: 1; font-size: 20px; color: #1c2c45; }
+  .name small { display: block; margin-top: 5px; font-size: 12px;
+    font-weight: 400; color: #8a98ab; letter-spacing: 0; }
   .tag { color: #8a98ab; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; }
   .foot { position: absolute; bottom: 24mm; left: 30mm; right: 30mm;
     font-size: 12px; color: #aab4c2; text-align: center; }
@@ -34,23 +36,17 @@
 </head>
 <body>
   <div class="page">
-    <div class="brand"><b>smrcore_sdk</b> 中文手册</div>
+    <div class="brand"><b>smrcore_sdk</b> 中文手册 · v{{VERSION}}</div>
     <div class="kicker">Contents</div>
     <h1>目录</h1>
     <div class="bar"></div>
     <ol>
-      <li><span class="name">首页</span><span class="tag">指南</span></li>
-      <li><span class="name">安装</span><span class="tag">指南</span></li>
-      <li><span class="name">使用</span><span class="tag">指南</span></li>
-      <li><span class="name">示例总览</span><span class="tag">示例</span></li>
-      <li><span class="name">基础示例</span><span class="tag">示例</span></li>
-      <li><span class="name">运动示例</span><span class="tag">示例</span></li>
-      <li><span class="name">配置示例</span><span class="tag">示例</span></li>
-      <li><span class="name">柔顺控制示例</span><span class="tag">示例</span></li>
-      <li><span class="name">支持</span><span class="tag">支持</span></li>
-      <li><span class="name">API 参考</span><span class="tag">参考</span></li>
+      <li><span class="name">用户指南<small>首页 · 快速开始</small></span><span class="tag">指南</span></li>
+      <li><span class="name">C++ 示例指南<small>总览 · 基础 · 运动 · 配置 · 柔顺控制</small></span><span class="tag">C++</span></li>
+      <li><span class="name">Python 示例指南<small>总览 · 基础 · 运动 · 配置 · 柔顺控制 · API 摘要</small></span><span class="tag">Python</span></li>
+      <li><span class="name">C++ API 参考</span><span class="tag">参考</span></li>
     </ol>
-    <div class="foot">完整可点击目录见 PDF 书签（阅读器左侧大纲）</div>
+    <div class="foot">版本 {{VERSION}} · {{DATE}}　|　完整可点击目录见 PDF 书签（阅读器左侧大纲）</div>
   </div>
 </body>
 </html>

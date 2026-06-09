@@ -29,9 +29,12 @@ live on the documentation site.
 
 - **[Documentation site](https://smore-robotics.github.io/smrcore_sdk/)**
 - **[中文文档](https://smore-robotics.github.io/smrcore_sdk/zh/)**
+- **[Python SDK](https://smore-robotics.github.io/smrcore_sdk/python/)**
 - **[C++ API reference](https://smore-robotics.github.io/smrcore_sdk/api/cpp/)**
 
 ## Quick Start
+
+### C++
 
 ```bash
 git clone https://github.com/smore-robotics/smrcore_sdk.git
@@ -43,19 +46,31 @@ cd smrcore_sdk
 ./build/basics_connect [robot_ip] # omit robot_ip for local simulation
 ```
 
-Python setup and the remaining examples are covered on the
+### Python
+
+```bash
+VERSION=0.0.1  # replace with the release version you want
+PY_TAG=cp310-cp310-linux_x86_64   # Windows: cp310-cp310-win_amd64
+curl -L -O "https://github.com/smore-robotics/smrcore_sdk/releases/download/v${VERSION}/rcore_sdk_py-${VERSION}-${PY_TAG}.whl"
+python3 -m pip install "./rcore_sdk_py-${VERSION}-${PY_TAG}.whl"
+
+python3 examples_py/basics/connect.py [robot_ip] # omit robot_ip for local simulation
+```
+
+More setup and examples are on the
 [documentation site](https://smore-robotics.github.io/smrcore_sdk/).
 
 ## Release Assets
 
-Prebuilt binaries are published on the
+Release assets are published on the
 **[Releases page](https://github.com/smore-robotics/smrcore_sdk/releases)**:
 
-```text
-smrcore_sdk-cpp-linux-x86_64-v<version>.tar.gz
-smrcore_sdk-cpp-windows-x86_64-v<version>.tar.gz
-rcore_sdk_py-<version>-<python-tags>.whl
-```
+| Asset | Description |
+|---|---|
+| `smrcore_sdk-cpp-linux-x86_64-v<version>.tar.gz` | C++ SDK for Linux x86_64 |
+| `smrcore_sdk-cpp-windows-x86_64-v<version>.tar.gz` | C++ SDK for Windows x86_64 |
+| `rcore_sdk_py-<version>-<python-tags>.whl` | Python wheel (per Python ABI / platform) |
+| `smrcore_sdk-docs-zh-v<version>.pdf` | Chinese documentation PDF |
 
 ## Safety
 

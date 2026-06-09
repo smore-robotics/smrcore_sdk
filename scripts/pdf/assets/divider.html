@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<title>{{TITLE}}</title>
+<style>
+  @page { size: A4; margin: 0; }
+  html, body { margin: 0; padding: 0; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .page {
+    width: 210mm; height: 297mm; box-sizing: border-box;
+    position: relative; overflow: hidden;
+    background: radial-gradient(120% 95% at 50% -5%, #2c4d7d 0%, #1e3a63 45%, #122441 100%);
+    color: #ffffff;
+    font-family: "Noto Sans CJK SC", "Source Han Sans SC", "PingFang SC",
+                 "Microsoft YaHei", "Segoe UI", Helvetica, Arial, sans-serif;
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 0 30mm;
+  }
+  .blob {
+    position: absolute; width: 520px; height: 520px;
+    border-radius: 46% 54% 52% 48%;
+    background: rgba(156, 58, 49, 0.18);
+    top: -160px; right: -170px;
+  }
+  .kicker { color: #e0a39c; letter-spacing: 6px; text-transform: uppercase;
+    font-size: 14px; font-weight: 700; margin: 0; }
+  .num { font-size: 150px; font-weight: 800; line-height: 1; margin: 0 0 -10px;
+    opacity: 0.14; }
+  h1 { font-size: 56px; font-weight: 800; margin: 6px 0 0; letter-spacing: 1px; }
+  .rule { width: 92px; height: 4px; background: #b14a40; border-radius: 2px;
+    margin: 22px 0; }
+  .subtitle { font-size: 18px; line-height: 1.7; opacity: 0.86; margin: 0;
+    max-width: 125mm; }
+  .brand { position: absolute; bottom: 24mm; left: 30mm;
+    font-size: 12px; letter-spacing: 1px; color: rgba(255, 255, 255, 0.6); }
+  .brand b { color: #ffffff; }
+</style>
+</head>
+<body>
+  <div class="page">
+    <div class="blob"></div>
+    <p class="num">{{NUMBER}}</p>
+    <p class="kicker">{{KICKER}}</p>
+    <h1>{{TITLE}}</h1>
+    <div class="rule"></div>
+    <p class="subtitle">{{SUBTITLE}}</p>
+    <div class="brand"><b>smrcore_sdk</b> 中文手册 · v{{VERSION}}</div>
+  </div>
+</body>
+</html>

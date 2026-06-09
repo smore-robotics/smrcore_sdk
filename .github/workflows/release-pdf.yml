@@ -1,14 +1,11 @@
 name: Release PDF
 
 on:
-  push:
-    tags: ["v*"]
   workflow_dispatch:
     inputs:
       version:
-        description: "SDK version to fetch (x.y.z or latest)"
-        required: false
-        default: "latest"
+        description: "SDK version to fetch and attach to (x.y.z or vx.y.z)"
+        required: true
 
 permissions:
   contents: write
@@ -41,10 +38,11 @@ jobs:
 
       - name: Resolve version
         run: |
-          if [ "${{ github.event_name }}" = "push" ]; then
-            version="${GITHUB_REF_NAME#v}"
-          else
-            version="${{ github.event.inputs.version }}"
+          version="${{ github.event.inputs.version }}"
+          version="${version#v}"
+          if ! printf '%s\n' "$version" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "version must be x.y.z or vx.y.z, got: ${{ github.event.inputs.version }}" >&2
+            exit 1
           fi
           echo "VERSION=$version" >> "$GITHUB_ENV"
 
@@ -54,22 +52,25 @@ jobs:
       - name: Build PDF
         env:
           CHROME_BIN: ${{ steps.setup-chrome.outputs.chrome-path }}
-          OUT_PDF: site/pdf/smrcore_sdk_zh.pdf
+          OUT_PDF: site/pdf/smrcore_sdk-docs-zh-v${{ env.VERSION }}.pdf
         run: ./scripts/docs_pdf.sh
 
       - name: Verify PDF
+        env:
+          PDF_PATH: site/pdf/smrcore_sdk-docs-zh-v${{ env.VERSION }}.pdf
         run: |
-          test -f site/pdf/smrcore_sdk_zh.pdf
-          pdfinfo site/pdf/smrcore_sdk_zh.pdf
+          test -f "$PDF_PATH"
+          pdfinfo "$PDF_PATH"
           # Fail if any local path leaked into the PDF text.
-          if pdftotext site/pdf/smrcore_sdk_zh.pdf - | grep -aE "file://|/home/"; then
+          if pdftotext "$PDF_PATH" - | grep -aE "file://|/home/"; then
             echo "PDF text contains local paths" >&2
             exit 1
           fi
           # Fail if any link annotation leaked (pdftotext cannot see these).
-          python3 - <<'PY'
+          python3 - "$PDF_PATH" <<'PY'
+          import sys
           from pypdf import PdfReader
-          r = PdfReader("site/pdf/smrcore_sdk_zh.pdf")
+          r = PdfReader(sys.argv[1])
           bad = 0
           for page in r.pages:
               for a in page.get("/Annots") or []:
@@ -83,11 +84,11 @@ jobs:
       - name: Upload PDF as workflow artifact
         uses: actions/upload-artifact@v4
         with:
-          name: smrcore_sdk_zh_pdf
-          path: site/pdf/smrcore_sdk_zh.pdf
+          name: smrcore_sdk-docs-zh-pdf
+          path: site/pdf/smrcore_sdk-docs-zh-v${{ env.VERSION }}.pdf
 
       - name: Attach PDF to release
-        if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
-          files: site/pdf/smrcore_sdk_zh.pdf
+          tag_name: v${{ env.VERSION }}
+          files: site/pdf/smrcore_sdk-docs-zh-v${{ env.VERSION }}.pdf

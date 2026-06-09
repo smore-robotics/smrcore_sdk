@@ -4,6 +4,7 @@ out/
 cmake-build-*/
 site/
 docs/api/cpp/
+.docs-pdf-parts.*/
 
 # Downloaded/extracted artifacts
 *.tar.gz

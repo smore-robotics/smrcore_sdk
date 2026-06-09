@@ -1,52 +1,55 @@
 # smrcore_sdk
 
-`smrcore_sdk` is the public documentation and integration repository for the
-Smartmore Robot SDK. It provides release download instructions, C++ and Python
-examples, compatibility notes, and generated C++ API reference.
+<div class="smr-hero" markdown>
 
-The repository does not contain SDK source code. Users download versioned SDK
-assets from GitHub Releases and build their applications against those assets.
+The public documentation, examples, and C++ API reference for the
+**Smartmore Robot SDK** — build, integrate, and deploy robot applications in
+C++ or Python.
 
-## Start Here
+</div>
 
-- [Install](install.md)
-- [Usage](usage.md)
-- [Examples](examples.md)
-- [Support](support.md)
-- [API Reference](api/index.md)
+<div class="grid cards" markdown>
 
-## Quick Start
+-   :material-rocket-launch:{ .lg .middle } **Getting Started**
 
-```bash
-git clone https://github.com/smore-robotics/smrcore_sdk.git
-cd smrcore_sdk
+    ---
 
-./scripts/download.sh
-./scripts/build.sh
+    Download the SDK, build the examples, and run a minimal program.
 
-./build/basics_connect [robot_ip]
-./build/basics_read_state [robot_ip]
-```
+    [Start here →](getting-started.md)
 
-Omit `robot_ip` for local simulation. Motion examples are also available, but
-review their targets before running:
+-   :material-language-cpp:{ .lg .middle } **C++ Examples**
 
-```bash
-./build/motion_movej [robot_ip]
-./build/motion_movel [robot_ip]
-```
+    ---
+
+    Runnable C++ examples: basics, motion, configuration, compliance.
+
+    [Browse C++ examples →](examples/index.md)
+
+-   :material-language-python:{ .lg .middle } **Python Examples**
+
+    ---
+
+    Runnable Python examples that mirror the C++ set.
+
+    [Browse Python examples →](python/examples/index.md)
+
+-   :material-file-document-outline:{ .lg .middle } **API Reference**
+
+    ---
+
+    Generated C++ API reference and the Python API summary.
+
+    [Open API reference →](api/index.md)
+
+</div>
 
 ## What This Repository Provides
 
-- C++ SDK release archives for supported platforms.
-- Python wheels for supported Python and platform tags.
-- C++ examples in `examples/`.
-- Python examples in `examples_py/`.
-- Scripts for downloading the latest C++ SDK and building examples.
-- API reference generated from the C++ SDK headers.
+- [x] Versioned C++ SDK release archives and Python wheels
+- [x] Runnable C++ examples (`examples/`) and Python examples (`examples_py/`)
+- [x] Scripts to download the latest C++ SDK and build the examples
+- [x] C++ API reference generated from the SDK headers
 
-## Safety Notice
-
-Robots are hazardous machines. Before running any motion example or user
-application, verify the target is safe for your robot, tool, payload, and
-workspace. Confirm emergency stop is reachable and the workspace is clear.
+The repository does not contain SDK source code. Users download versioned SDK
+assets from GitHub Releases and build their applications against those assets.

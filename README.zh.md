@@ -4,7 +4,7 @@
 
 # smrcore_sdk
 
-**基于SmartArm SDK,快速构建、集成并部署机器人应用。**
+**基于 Smartmore Robot SDK，快速构建、集成并部署机器人应用。**
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-1f6feb.svg)](LICENSE)
 [![Docs](https://img.shields.io/badge/Docs-online-2ea043.svg)](https://smore-robotics.github.io/smrcore_sdk/zh/)
@@ -27,9 +27,12 @@
 
 - **[文档站点](https://smore-robotics.github.io/smrcore_sdk/zh/)**
 - **[English docs](https://smore-robotics.github.io/smrcore_sdk/)**
+- **[Python SDK](https://smore-robotics.github.io/smrcore_sdk/zh/python/)**
 - **[C++ API 参考](https://smore-robotics.github.io/smrcore_sdk/api/cpp/)**
 
 ## 快速开始
+
+### C++
 
 ```bash
 git clone https://github.com/smore-robotics/smrcore_sdk.git
@@ -41,19 +44,31 @@ cd smrcore_sdk
 ./build/basics_connect [robot_ip] # 省略 robot_ip 即为本机仿真
 ```
 
-Python 环境配置与其余示例详见
+### Python
+
+```bash
+VERSION=0.0.1  # 按需替换为目标发布版本
+PY_TAG=cp310-cp310-linux_x86_64   # Windows: cp310-cp310-win_amd64
+curl -L -O "https://github.com/smore-robotics/smrcore_sdk/releases/download/v${VERSION}/rcore_sdk_py-${VERSION}-${PY_TAG}.whl"
+python3 -m pip install "./rcore_sdk_py-${VERSION}-${PY_TAG}.whl"
+
+python3 examples_py/basics/connect.py [robot_ip] # 省略 robot_ip 即为本机仿真
+```
+
+更多配置与示例详见
 [文档站点](https://smore-robotics.github.io/smrcore_sdk/zh/)。
 
 ## Release 制品
 
-预编译二进制发布在
+Release 制品发布在
 **[Releases 页面](https://github.com/smore-robotics/smrcore_sdk/releases)**:
 
-```text
-smrcore_sdk-cpp-linux-x86_64-v<version>.tar.gz
-smrcore_sdk-cpp-windows-x86_64-v<version>.tar.gz
-rcore_sdk_py-<version>-<python-tags>.whl
-```
+| 制品 | 说明 |
+|---|---|
+| `smrcore_sdk-cpp-linux-x86_64-v<version>.tar.gz` | Linux x86_64 的 C++ SDK |
+| `smrcore_sdk-cpp-windows-x86_64-v<version>.tar.gz` | Windows x86_64 的 C++ SDK |
+| `rcore_sdk_py-<version>-<python-tags>.whl` | Python wheel（按 Python ABI / 平台） |
+| `smrcore_sdk-docs-zh-v<version>.pdf` | 中文文档 PDF |
 
 ## 安全提示
 
