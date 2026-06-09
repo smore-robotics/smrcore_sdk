@@ -1,21 +1,19 @@
 #!/usr/bin/env python3
-"""01_connect - connection lifecycle: Initialize / IsConnected / Shutdown.
+"""basics/connect - connection lifecycle: Initialize / IsConnected / Shutdown.
 
 Usage:
-    python examples_py/01_connect.py [robot_ip]
+    python examples_py/basics/connect.py [robot_ip]
 
-Pass a robot IP, such as 192.168.1.100, to connect to a remote robot. Omit
-robot_ip for local simulation.
+    - Pass a robot IP, such as 192.168.1.100, to connect to a remote robot.
+    - Omit robot_ip for local simulation.
 """
-
-from __future__ import annotations
 
 import sys
 
 from rcore_sdk import Robot
 
 
-def main() -> int:
+def main():
     robot_ip = sys.argv[1] if len(sys.argv) > 1 else ""
 
     robot = Robot()
@@ -24,6 +22,7 @@ def main() -> int:
         return 1
 
     print(f"Initialize succeeded, IsConnected = {robot.IsConnected()}")
+
     robot.Shutdown()
     return 0
 
