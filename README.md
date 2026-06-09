@@ -29,9 +29,12 @@ live on the documentation site.
 
 - **[Documentation site](https://smore-robotics.github.io/smrcore_sdk/)**
 - **[中文文档](https://smore-robotics.github.io/smrcore_sdk/zh/)**
+- **[Python SDK](https://smore-robotics.github.io/smrcore_sdk/python/)**
 - **[C++ API reference](https://smore-robotics.github.io/smrcore_sdk/api/cpp/)**
 
 ## Quick Start
+
+### C++
 
 ```bash
 git clone https://github.com/smore-robotics/smrcore_sdk.git
@@ -43,7 +46,19 @@ cd smrcore_sdk
 ./build/basics_connect [robot_ip] # omit robot_ip for local simulation
 ```
 
-Python setup and the remaining examples are covered on the
+### Python
+
+```bash
+# Set VERSION to the release you want (see the Releases page), e.g. 0.0.1.
+VERSION=0.0.1
+PY_TAG=cp310-cp310-linux_x86_64   # Windows: cp310-cp310-win_amd64
+curl -L -O "https://github.com/smore-robotics/smrcore_sdk/releases/download/v${VERSION}/rcore_sdk_py-${VERSION}-${PY_TAG}.whl"
+python3 -m pip install "./rcore_sdk_py-${VERSION}-${PY_TAG}.whl"
+
+python3 examples_py/basics/connect.py [robot_ip] # omit robot_ip for local simulation
+```
+
+More setup and examples are on the
 [documentation site](https://smore-robotics.github.io/smrcore_sdk/).
 
 ## Release Assets

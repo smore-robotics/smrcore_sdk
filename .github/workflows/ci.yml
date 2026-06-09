@@ -74,7 +74,7 @@ jobs:
           PY
 
       - name: Check Python examples
-        run: python3 -m py_compile examples_py/*.py
+        run: ./scripts/check_python_examples.sh
 
   windows-sdk-smoke:
     runs-on: windows-2022
@@ -146,6 +146,6 @@ jobs:
       - name: Check Python examples
         shell: pwsh
         run: |
-          Get-ChildItem examples_py -Filter *.py | ForEach-Object {
+          Get-ChildItem examples_py -Recurse -Filter *.py | ForEach-Object {
             python -m py_compile $_.FullName
           }

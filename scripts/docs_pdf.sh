@@ -110,14 +110,19 @@ PAGES+=("$TOC_HTML")
 
 # Chinese guide pages.
 add_page "zh/index.html"
-add_page "zh/install/index.html"
-add_page "zh/usage/index.html"
+add_page "zh/getting-started/index.html"
 add_page "zh/examples/index.html"
 add_page "zh/examples/basics/index.html"
 add_page "zh/examples/motion/index.html"
 add_page "zh/examples/config/index.html"
 add_page "zh/examples/compliance/index.html"
-add_page "zh/support/index.html"
+add_page "zh/python/index.html"
+add_page "zh/python/examples/index.html"
+add_page "zh/python/examples/basics/index.html"
+add_page "zh/python/examples/motion/index.html"
+add_page "zh/python/examples/config/index.html"
+add_page "zh/python/examples/compliance/index.html"
+add_page "zh/python/api/index.html"
 add_page "zh/api/index.html"
 
 # Doxygen API pages. Keep generated source/member-list/search pages out of the

@@ -19,7 +19,12 @@ from pathlib import Path
 from pypdf import PdfReader, PdfWriter
 
 GROUP_GUIDE = "用户指南"
+GROUP_CPP_EX = "示例 (C++)"
+GROUP_PYTHON = "示例 (Python)"
 GROUP_API = "C++ API 参考"
+
+# Pages promoted to top-level outline entries (no group wrapper).
+TOP_LEVEL = ("cover.html", "toc.html")
 
 
 def title_from_html(path: str) -> str:
@@ -32,7 +37,14 @@ def title_from_html(path: str) -> str:
 
 
 def group_of(html_path: str) -> str:
-    return GROUP_API if "/api/cpp/" in html_path else GROUP_GUIDE
+    path = html_path.replace("\\", "/")
+    if "/python/" in path:
+        return GROUP_PYTHON
+    if "/api/" in path:
+        return GROUP_API
+    if "/examples/" in path:
+        return GROUP_CPP_EX
+    return GROUP_GUIDE
 
 
 def main() -> int:
@@ -53,7 +65,7 @@ def main() -> int:
     for part, src in entries:
         pages = len(PdfReader(part).pages)
         name = Path(src).name
-        if name in ("cover.html", "toc.html"):
+        if name in TOP_LEVEL:
             writer.add_outline_item(title_from_html(src), start)
             current_group = None
             parent = None

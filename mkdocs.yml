@@ -21,16 +21,16 @@ plugins:
           site_description: Smartmore Robot SDK 文档
           nav_translations:
             Home: 首页
-            Install: 安装
-            Usage: 使用
-            Examples: 示例
+            Getting Started: 快速开始
+            Examples (C++): 示例 (C++)
+            Examples (Python): 示例 (Python)
             Overview: 总览
             Basics: 基础
             Motion: 运动
             Configuration: 配置
             Compliance: 柔顺控制
-            Support: 支持
             API Reference: API 参考
+            API Summary: API 摘要
 
 theme:
   name: material
@@ -64,15 +64,21 @@ theme:
 
 nav:
   - Home: index.md
-  - Install: install.md
-  - Usage: usage.md
-  - Examples:
+  - Getting Started: getting-started.md
+  - Examples (C++):
       - Overview: examples/index.md
       - Basics: examples/basics.md
       - Motion: examples/motion.md
       - Configuration: examples/config.md
       - Compliance: examples/compliance.md
-  - Support: support.md
+  - Examples (Python):
+      - Python SDK: python/index.md
+      - Overview: python/examples/index.md
+      - Basics: python/examples/basics.md
+      - Motion: python/examples/motion.md
+      - Configuration: python/examples/config.md
+      - Compliance: python/examples/compliance.md
+      - API Summary: python/api.md
   - API Reference: api/index.md
 
 extra_css:

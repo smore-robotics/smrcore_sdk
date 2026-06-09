@@ -8,8 +8,7 @@ Each example's source file starts with a header comment that is the full
 reference (usage, behaviour, safety). The tables below summarise, per example,
 what it shows, the main APIs, its prerequisites, and when to use it.
 
-> Python examples (`examples_py/`) are being realigned to this same layout and
-> are not listed here yet.
+> Looking for Python? See the [Python Examples](../python/examples/index.md).
 
 ## Recommended Path
 
