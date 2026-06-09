@@ -73,6 +73,7 @@ int main(int argc, char **argv)
         }
 
         // Loop-invariant parameters: set them here, never inside the loop.
+        constexpr double kPi = 3.14159265358979323846;
         const double amplitude_rad = 0.05;     // ~2.9 deg
         const double frequency_hz = 0.5;        // one cycle every 2 s
         const auto period = std::chrono::milliseconds(1); // 1 kHz
@@ -86,7 +87,7 @@ int main(int argc, char **argv)
         {
             const double t = i * 0.001;
             const double offset =
-                amplitude_rad * std::sin(2.0 * M_PI * frequency_hz * t);
+                amplitude_rad * std::sin(2.0 * kPi * frequency_hz * t);
 
             rcore::sdk::JointPositions target = home;
             target[0] = home[0] + offset;

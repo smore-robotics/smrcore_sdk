@@ -80,6 +80,7 @@ int main(int argc, char **argv)
             rcore::sdk::Pose::FromEuler(position, orientation);
 
         // Loop-invariant parameters: set them here, never inside the loop.
+        constexpr double kPi = 3.14159265358979323846;
         const double amplitude_m = 0.01;        // 1 cm
         const double frequency_hz = 0.5;        // one cycle every 2 s
         const auto period = std::chrono::milliseconds(1); // 1 kHz
@@ -93,7 +94,7 @@ int main(int argc, char **argv)
         {
             const double t = i * 0.001;
             const double offset =
-                amplitude_m * std::sin(2.0 * M_PI * frequency_hz * t);
+                amplitude_m * std::sin(2.0 * kPi * frequency_hz * t);
 
             // Copy the base pose and shift Z by the current offset.
             auto target = base_pose;
