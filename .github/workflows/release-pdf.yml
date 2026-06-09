@@ -1,14 +1,11 @@
 name: Release PDF
 
 on:
-  push:
-    tags: ["v*"]
   workflow_dispatch:
     inputs:
       version:
-        description: "SDK version to fetch (x.y.z or latest)"
-        required: false
-        default: "latest"
+        description: "SDK version to fetch and attach to (x.y.z or vx.y.z)"
+        required: true
 
 permissions:
   contents: write
@@ -41,10 +38,11 @@ jobs:
 
       - name: Resolve version
         run: |
-          if [ "${{ github.event_name }}" = "push" ]; then
-            version="${GITHUB_REF_NAME#v}"
-          else
-            version="${{ github.event.inputs.version }}"
+          version="${{ github.event.inputs.version }}"
+          version="${version#v}"
+          if ! printf '%s\n' "$version" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "version must be x.y.z or vx.y.z, got: ${{ github.event.inputs.version }}" >&2
+            exit 1
           fi
           echo "VERSION=$version" >> "$GITHUB_ENV"
 
@@ -87,7 +85,7 @@ jobs:
           path: site/pdf/smrcore_sdk_zh.pdf
 
       - name: Attach PDF to release
-        if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: v${{ env.VERSION }}
           files: site/pdf/smrcore_sdk_zh.pdf
