@@ -19,8 +19,8 @@ from pathlib import Path
 from pypdf import PdfReader, PdfWriter
 
 GROUP_GUIDE = "用户指南"
-GROUP_CPP_EX = "示例 (C++)"
-GROUP_PYTHON = "示例 (Python)"
+GROUP_CPP_EX = "C++ 示例"
+GROUP_PYTHON = "Python 示例"
 GROUP_API = "C++ API 参考"
 
 # Pages promoted to top-level outline entries (no group wrapper).

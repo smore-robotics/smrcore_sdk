@@ -22,8 +22,8 @@ plugins:
           nav_translations:
             Home: 首页
             Getting Started: 快速开始
-            Examples (C++): 示例 (C++)
-            Examples (Python): 示例 (Python)
+            C++ Examples: C++ 示例
+            Python Examples: Python 示例
             Overview: 总览
             Basics: 基础
             Motion: 运动
@@ -65,13 +65,13 @@ theme:
 nav:
   - Home: index.md
   - Getting Started: getting-started.md
-  - Examples (C++):
+  - C++ Examples:
       - Overview: examples/index.md
       - Basics: examples/basics.md
       - Motion: examples/motion.md
       - Configuration: examples/config.md
       - Compliance: examples/compliance.md
-  - Examples (Python):
+  - Python Examples:
       - Python SDK: python/index.md
       - Overview: python/examples/index.md
       - Basics: python/examples/basics.md

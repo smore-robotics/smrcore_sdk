@@ -1,6 +1,26 @@
 # 快速开始
 
-本页介绍如何下载 SDK、基于它构建，以及运行一个最小的 C++ 或 Python 程序。
+本页介绍如何下载 SDK、基于它构建，以及运行一个最小的 C++ 或 Python 程序。请选择你的路径：
+
+<div class="grid cards" markdown>
+
+-   **C++ SDK**
+
+    ---
+
+    下载压缩包、构建示例，并接入 CMake。
+
+    [前往 C++ SDK →](#c-sdk)
+
+-   **Python SDK**
+
+    ---
+
+    安装 wheel、验证链接的 SDK，并运行示例。
+
+    [前往 Python SDK →](#python-sdk)
+
+</div>
 
 ## Release 制品
 
@@ -19,7 +39,7 @@ rcore_sdk_py-<version>-<python-tags>.whl
 smrcore_sdk-docs-zh-v<version>.pdf
 ```
 
-## C++ SDK
+## C++ SDK {#c-sdk}
 
 ### 下载
 
@@ -95,7 +115,7 @@ int main()
 }
 ```
 
-## Python SDK
+## Python SDK {#python-sdk}
 
 ### 安装 wheel
 

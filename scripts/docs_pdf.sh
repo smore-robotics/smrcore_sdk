@@ -6,8 +6,9 @@ cd "$ROOT_DIR"
 
 SITE_DIR="${SITE_DIR:-site}"
 PDF_DIR="${PDF_DIR:-$SITE_DIR/pdf}"
-WORK_DIR="$PDF_DIR/.parts"
 OUT_PDF="${OUT_PDF:-}"
+WORK_DIR="${PDF_WORK_DIR:-}"
+CLEAN_WORK_DIR=0
 
 CHROME_BIN="${CHROME_BIN:-}"
 if [ -z "$CHROME_BIN" ]; then
@@ -42,8 +43,26 @@ doxygen doc/Doxyfile
 echo "-> building MkDocs site"
 mkdocs build --clean --site-dir "$SITE_DIR"
 
-rm -rf "$WORK_DIR"
-mkdir -p "$WORK_DIR" "$PDF_DIR"
+mkdir -p "$PDF_DIR"
+
+# Keep intermediate PDFs outside the MkDocs output directory. Chrome renders
+# pages from SITE_DIR while writing PDF parts; placing the work directory inside
+# SITE_DIR makes it vulnerable to being removed by site rebuild/cleanup or other
+# output-directory operations.
+if [ -z "$WORK_DIR" ]; then
+    WORK_DIR="$(mktemp -d "$ROOT_DIR/.docs-pdf-parts.XXXXXX")"
+    CLEAN_WORK_DIR=1
+else
+    rm -rf "$WORK_DIR"
+    mkdir -p "$WORK_DIR"
+fi
+
+cleanup_work_dir() {
+    if [ "$CLEAN_WORK_DIR" = "1" ]; then
+        rm -rf "$WORK_DIR"
+    fi
+}
+trap cleanup_work_dir EXIT
 
 file_uri() {
     python3 - "$1" <<'PY'

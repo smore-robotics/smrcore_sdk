@@ -1,15 +1,49 @@
 /* ==========================================================================
-   smrcore_sdk docs theme tweaks.
-   Heading rules apply on both the website and the PDF; the @media print block
-   tunes layout, typography and pagination specifically for the generated PDF.
+   smrcore_sdk docs theme.
+
+   Layout:
+     1. Brand tokens          (shared)
+     2. Shared (web + print)  headings — kept identical so the PDF matches web
+     3. Web only              hero, cards, tables, code blocks
+     4. Print / PDF           @media print overrides for pagination & paper
    ========================================================================== */
 
-/* --- Headings: stronger hierarchy and contrast ------------------------- */
+/* --------------------------------------------------------------------------
+   1. Brand tokens
+   -------------------------------------------------------------------------- */
+:root {
+  --smr-blue: #1e3a63;
+  --smr-red: #b14a40;
+  --smr-cyan: #08a8c4;
+
+  /* Tinted surfaces derived from the brand colors. */
+  --smr-blue-tint: rgba(30, 58, 99, 0.05);
+  --smr-cyan-tint: rgba(8, 168, 196, 0.08);
+  --smr-red-tint: rgba(177, 74, 64, 0.06);
+}
+
+/* --------------------------------------------------------------------------
+   2. Shared headings (web + print)
+   -------------------------------------------------------------------------- */
 .md-typeset h1 {
   font-weight: 700;
   color: var(--md-default-fg-color);
-  border-bottom: 2px solid #b14a40;
-  padding-bottom: 0.25em;
+  border-bottom: 1px solid var(--md-default-fg-color--lightest);
+  padding-bottom: 0.3em;
+  position: relative;
+}
+
+/* A short brand accent under the left of the H1 — modern, less heavy than a
+   full-width red rule. */
+.md-typeset h1::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: 2.5rem;
+  height: 3px;
+  background: var(--smr-red);
+  border-radius: 2px;
 }
 
 .md-typeset h2 {
@@ -26,9 +60,101 @@
   font-weight: 600;
 }
 
-/* ==========================================================================
-   PDF / print
-   ========================================================================== */
+/* --------------------------------------------------------------------------
+   3. Web only
+   -------------------------------------------------------------------------- */
+
+/* Home hero: a calm intro band, not a marketing banner. */
+.md-typeset .smr-hero {
+  margin: 0 0 1.6rem;
+  padding: 1.1rem 1.3rem;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-left: 4px solid var(--smr-red);
+  border-radius: 8px;
+  background: var(--smr-blue-tint);
+}
+
+.md-typeset .smr-hero > :first-child {
+  margin-top: 0;
+}
+
+.md-typeset .smr-hero > :last-child {
+  margin-bottom: 0;
+}
+
+/* Entry cards (Material `grid cards`): subtle border + hover lift. */
+.md-typeset .grid.cards > ul > li,
+.md-typeset .grid.cards > .card {
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 8px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.md-typeset .grid.cards > ul > li:hover,
+.md-typeset .grid.cards > .card:hover {
+  border-color: var(--smr-blue);
+  box-shadow: 0 4px 16px rgba(30, 58, 99, 0.1);
+  transform: translateY(-2px);
+}
+
+.md-typeset .grid.cards > ul > li > hr {
+  margin: 0.6em 0;
+}
+
+/* Tables are the backbone of the examples pages — make them stable & scannable. */
+.md-typeset table:not([class]) {
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.md-typeset table:not([class]) th {
+  background: var(--smr-blue);
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.md-typeset table:not([class]) tr:hover td {
+  background: var(--smr-cyan-tint);
+}
+
+/* Make the first column (usually an identifier / symbol) stand out. */
+.md-typeset table:not([class]) td:first-child code {
+  background: var(--smr-blue-tint);
+  color: var(--smr-blue);
+  font-weight: 600;
+}
+
+/* Smooth horizontal scroll for wide tables. */
+.md-typeset__scrollwrap {
+  scrollbar-width: thin;
+}
+
+/* Code blocks: a defined card with a faint surface; keep the copy button. */
+.md-typeset .highlight {
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 8px;
+}
+
+.md-typeset .highlight > pre,
+.md-typeset pre > code {
+  border-radius: 8px;
+}
+
+.md-typeset .highlight:hover {
+  border-color: var(--md-default-fg-color--lighter);
+}
+
+/* Brand accent for notes/quotes on the web too (print has its own rule). */
+.md-typeset blockquote {
+  border-left: 4px solid var(--smr-red);
+  background: var(--smr-red-tint);
+  border-radius: 0 6px 6px 0;
+}
+
+/* --------------------------------------------------------------------------
+   4. Print / PDF
+   -------------------------------------------------------------------------- */
 @media print {
   /* Uniform A4 with comfortable margins. */
   @page {
@@ -40,6 +166,13 @@
   * {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
+  }
+
+  /* Web-only flourishes that should not carry into the PDF. */
+  .md-typeset .grid.cards > ul > li,
+  .md-typeset .grid.cards > .card {
+    box-shadow: none !important;
+    transform: none !important;
   }
 
   /* Drop site chrome so content uses the full page width. */
@@ -104,14 +237,14 @@
   .md-typeset h2::before {
     counter-increment: sec;
     content: counter(sec) "\00a0\00a0";
-    color: #b14a40;
+    color: var(--smr-red);
     font-weight: 700;
   }
 
   .md-typeset h3::before {
     counter-increment: subsec;
     content: counter(sec) "." counter(subsec) "\00a0\00a0";
-    color: #b14a40;
+    color: var(--smr-red);
     font-weight: 700;
   }
 
@@ -154,7 +287,7 @@
   }
 
   .md-typeset table:not([class]) th {
-    background-color: #1e3a63 !important;
+    background-color: var(--smr-blue) !important;
     color: #ffffff !important;
     font-weight: 700;
   }
@@ -165,7 +298,7 @@
 
   /* Notes/quotes: brand accent bar for emphasis. */
   .md-typeset blockquote {
-    border-left: 4px solid #b14a40;
+    border-left: 4px solid var(--smr-red);
     background: #faf3f2;
     padding: 0.4em 1em;
     color: var(--md-default-fg-color);
@@ -173,7 +306,7 @@
 
   /* Links: keep brand color, drop noisy underlines. */
   .md-typeset a {
-    color: #1e3a63;
+    color: var(--smr-blue);
     text-decoration: none;
   }
 }

@@ -1,14 +1,48 @@
 # smrcore_sdk
 
-`smrcore_sdk` is the public documentation and examples repository for the
-Smartmore Robot SDK.
+<div class="smr-hero" markdown>
 
-## Start Here
+The public documentation, examples, and C++ API reference for the
+**Smartmore Robot SDK** — build, integrate, and deploy robot applications in
+C++ or Python.
 
-- [Getting Started](getting-started.md)
-- [C++ Examples](examples/index.md)
-- [Python Examples](python/examples/index.md)
-- [API Reference](api/index.md)
+</div>
+
+<div class="grid cards" markdown>
+
+-   **Getting Started**
+
+    ---
+
+    Download the SDK, build the examples, and run a minimal program.
+
+    [Start here →](getting-started.md)
+
+-   **C++ Examples**
+
+    ---
+
+    Runnable C++ examples: basics, motion, configuration, compliance.
+
+    [Browse C++ examples →](examples/index.md)
+
+-   **Python Examples**
+
+    ---
+
+    Runnable Python examples that mirror the C++ set.
+
+    [Browse Python examples →](python/examples/index.md)
+
+-   **API Reference**
+
+    ---
+
+    Generated C++ API reference and the Python API summary.
+
+    [Open API reference →](api/index.md)
+
+</div>
 
 ## What This Repository Provides
 

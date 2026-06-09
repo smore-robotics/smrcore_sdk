@@ -1,7 +1,27 @@
 # Getting Started
 
 This page covers downloading the SDK, building against it, and running a minimal
-C++ or Python program.
+C++ or Python program. Pick your path:
+
+<div class="grid cards" markdown>
+
+-   **C++ SDK**
+
+    ---
+
+    Download the tarball, build the examples, and integrate with CMake.
+
+    [Go to C++ SDK →](#c-sdk)
+
+-   **Python SDK**
+
+    ---
+
+    Install the wheel, verify the linked SDK, and run the examples.
+
+    [Go to Python SDK →](#python-sdk)
+
+</div>
 
 ## Release Assets
 
@@ -20,7 +40,7 @@ rcore_sdk_py-<version>-<python-tags>.whl
 smrcore_sdk-docs-zh-v<version>.pdf
 ```
 
-## C++ SDK
+## C++ SDK {#c-sdk}
 
 ### Download
 
@@ -97,7 +117,7 @@ int main()
 }
 ```
 
-## Python SDK
+## Python SDK {#python-sdk}
 
 ### Install Wheel
 
