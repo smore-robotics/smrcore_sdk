@@ -1,0 +1,52 @@
+/* Doxygen API pages: align print output with the rest of the manual. */
+@media print {
+  @page {
+    size: A4;
+    margin: 16mm 16mm 18mm;
+  }
+
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Drop Doxygen navigation chrome. */
+  #top,
+  #side-nav,
+  #nav-path,
+  .header .summary,
+  .navpath,
+  #MSearchBox,
+  #MSearchResultsWindow {
+    display: none !important;
+  }
+
+  #doc-content {
+    margin-left: 0 !important;
+    width: auto !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  /* Keep code fragments, parameter tables and member tables intact. */
+  div.fragment,
+  pre.fragment,
+  table.memberdecls,
+  table.params,
+  table.fieldtable,
+  .memitem {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  div.fragment,
+  pre.fragment {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+
+  h1, h2, h3, h4, .memtitle {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+}

@@ -1,0 +1,179 @@
+/* ==========================================================================
+   smrcore_sdk docs theme tweaks.
+   Heading rules apply on both the website and the PDF; the @media print block
+   tunes layout, typography and pagination specifically for the generated PDF.
+   ========================================================================== */
+
+/* --- Headings: stronger hierarchy and contrast ------------------------- */
+.md-typeset h1 {
+  font-weight: 700;
+  color: var(--md-default-fg-color);
+  border-bottom: 2px solid #b14a40;
+  padding-bottom: 0.25em;
+}
+
+.md-typeset h2 {
+  font-weight: 700;
+  border-bottom: 1px solid var(--md-default-fg-color--lightest);
+  padding-bottom: 0.2em;
+}
+
+.md-typeset h3 {
+  font-weight: 600;
+}
+
+.md-typeset h4 {
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   PDF / print
+   ========================================================================== */
+@media print {
+  /* Uniform A4 with comfortable margins. */
+  @page {
+    size: A4;
+    margin: 16mm 16mm 18mm;
+  }
+
+  /* Force backgrounds/colors (code, admonitions, tables) to print. */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Drop site chrome so content uses the full page width. */
+  .md-header,
+  .md-tabs,
+  .md-sidebar,
+  .md-footer,
+  .md-content__button,
+  .md-source,
+  .md-top,
+  [data-md-component="announce"],
+  [data-md-component="skip"] {
+    display: none !important;
+  }
+
+  .md-main__inner,
+  .md-content,
+  .md-content__inner,
+  .md-grid {
+    margin: 0 !important;
+    max-width: none !important;
+  }
+
+  /* Body typography tuned for reading on paper. */
+  .md-typeset {
+    font-size: 10.5pt;
+    line-height: 1.7;
+    font-family: "Noto Sans CJK SC", "Source Han Sans SC", "PingFang SC",
+                 "Microsoft YaHei", "Segoe UI", Helvetica, Arial, sans-serif;
+  }
+
+  .md-typeset p,
+  .md-typeset li {
+    orphans: 3;
+    widows: 3;
+  }
+
+  /* Keep a heading with the content that follows it. */
+  .md-typeset h1,
+  .md-typeset h2,
+  .md-typeset h3,
+  .md-typeset h4 {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  .md-typeset h1:first-child {
+    margin-top: 0;
+  }
+
+  /* Manual-style section numbering (1, 1.1). Print only, so the website keeps
+     its clean look. Doxygen API pages use their own stylesheet and stay
+     unnumbered (they are reference material, not chaptered prose). */
+  .md-typeset {
+    counter-reset: sec;
+  }
+
+  .md-typeset h2 {
+    counter-reset: subsec;
+  }
+
+  .md-typeset h2::before {
+    counter-increment: sec;
+    content: counter(sec) "\00a0\00a0";
+    color: #b14a40;
+    font-weight: 700;
+  }
+
+  .md-typeset h3::before {
+    counter-increment: subsec;
+    content: counter(sec) "." counter(subsec) "\00a0\00a0";
+    color: #b14a40;
+    font-weight: 700;
+  }
+
+  /* Avoid splitting atomic blocks across pages where possible. */
+  .md-typeset pre,
+  .md-typeset .highlight,
+  .md-typeset table,
+  .md-typeset blockquote,
+  .md-typeset .admonition,
+  .md-typeset figure,
+  .md-typeset img {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* Code blocks: compact, bordered, and never clipped (wrap long lines). */
+  .md-typeset pre > code,
+  .md-typeset .highlight pre {
+    font-size: 8.6pt;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  .md-typeset .highlight {
+    border: 1px solid #d7dde6;
+    border-radius: 4px;
+  }
+
+  /* Hide the per-block copy button in print. */
+  .md-clipboard {
+    display: none !important;
+  }
+
+  /* Tables: full width with a shaded header that prints. */
+  .md-typeset table:not([class]) {
+    width: 100%;
+    font-size: 9.5pt;
+  }
+
+  .md-typeset table:not([class]) th {
+    background-color: #1e3a63 !important;
+    color: #ffffff !important;
+    font-weight: 700;
+  }
+
+  .md-typeset table:not([class]) tr:nth-child(even) {
+    background-color: #f3f6fa !important;
+  }
+
+  /* Notes/quotes: brand accent bar for emphasis. */
+  .md-typeset blockquote {
+    border-left: 4px solid #b14a40;
+    background: #faf3f2;
+    padding: 0.4em 1em;
+    color: var(--md-default-fg-color);
+  }
+
+  /* Links: keep brand color, drop noisy underlines. */
+  .md-typeset a {
+    color: #1e3a63;
+    text-decoration: none;
+  }
+}

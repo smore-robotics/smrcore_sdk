@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<title>封面</title>
+<style>
+  @page { size: A4; margin: 0; }
+  html, body { margin: 0; padding: 0; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .page {
+    width: 210mm; height: 297mm; box-sizing: border-box;
+    position: relative; overflow: hidden;
+    background: radial-gradient(120% 95% at 50% -5%, #2c4d7d 0%, #1e3a63 45%, #122441 100%);
+    color: #fff;
+    font-family: "Noto Sans CJK SC", "Source Han Sans SC", "PingFang SC",
+                 "Microsoft YaHei", "Segoe UI", Helvetica, Arial, sans-serif;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+  }
+  .blob {
+    position: absolute; width: 560px; height: 560px;
+    border-radius: 46% 54% 52% 48%;
+    background: rgba(156, 58, 49, 0.20);
+    top: -170px; right: -180px;
+  }
+  .blob2 {
+    position: absolute; width: 460px; height: 460px; border-radius: 50%;
+    background: rgba(44, 77, 125, 0.40);
+    bottom: -180px; left: -150px;
+  }
+  .hairline { position: absolute; left: 28mm; right: 28mm; height: 1px;
+    background: rgba(255, 255, 255, 0.14); }
+  .hairline.top { top: 24mm; }
+  .hairline.bottom { bottom: 24mm; }
+  .logo { width: 150px; height: auto; margin-bottom: 30px;
+    filter: drop-shadow(0 12px 34px rgba(0, 0, 0, 0.40)); }
+  .title { font-size: 66px; font-weight: 800; letter-spacing: 1px; margin: 0; }
+  .rule { width: 92px; height: 4px; background: #b14a40; border-radius: 2px; margin: 24px 0; }
+  .subtitle { font-size: 23px; font-weight: 400; opacity: 0.92; margin: 0; }
+  .sub2 { font-size: 15px; opacity: 0.62; margin-top: 12px;
+    letter-spacing: 4px; text-transform: uppercase; }
+  .meta { position: absolute; bottom: 34mm; left: 0; right: 0; text-align: center;
+    font-size: 14px; opacity: 0.78; line-height: 2.0; }
+  .meta .v { display: inline-block; border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 999px; padding: 5px 18px; font-size: 13px; letter-spacing: 1px; }
+  .meta .repo { display: block; margin-top: 12px; opacity: 0.7; letter-spacing: 0.5px; }
+</style>
+</head>
+<body>
+  <div class="page">
+    <div class="blob"></div>
+    <div class="blob2"></div>
+    <div class="hairline top"></div>
+    <div class="hairline bottom"></div>
+    <img class="logo" src="{{LOGO}}" alt="logo">
+    <h1 class="title">smrcore_sdk</h1>
+    <div class="rule"></div>
+    <p class="subtitle">Smartmore 机器人 SDK · 开发者手册</p>
+    <p class="sub2">Robot Control SDK</p>
+    <div class="meta">
+      <span class="v">版本 {{VERSION}} · {{DATE}}</span>
+      <span class="repo">github.com/smore-robotics/smrcore_sdk</span>
+    </div>
+  </div>
+</body>
+</html>

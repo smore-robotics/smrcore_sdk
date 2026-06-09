@@ -2,6 +2,7 @@ PROJECT_NAME           = "smrcore_sdk C++ API"
 PROJECT_BRIEF          = "Smartmore Robot SDK C++ API Reference"
 OUTPUT_DIRECTORY       = docs/api/cpp
 HTML_OUTPUT            = .
+HTML_EXTRA_STYLESHEET  = doc/doxygen_print.css
 
 INPUT                  = 3rdparty/smrcore_sdk/include/rcore/sdk
 FILE_PATTERNS          = *.hpp

@@ -1,0 +1,93 @@
+name: Release PDF
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "SDK version to fetch (x.y.z or latest)"
+        required: false
+        default: "latest"
+
+permissions:
+  contents: write
+
+jobs:
+  build-pdf:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Set up Chrome
+        id: setup-chrome
+        uses: browser-actions/setup-chrome@v1
+
+      - name: Install documentation tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            doxygen graphviz poppler-utils fonts-noto-cjk
+          python -m pip install --upgrade pip
+          python -m pip install \
+            mkdocs-material mkdocs-static-i18n pypdf reportlab
+
+      - name: Resolve version
+        run: |
+          if [ "${{ github.event_name }}" = "push" ]; then
+            version="${GITHUB_REF_NAME#v}"
+          else
+            version="${{ github.event.inputs.version }}"
+          fi
+          echo "VERSION=$version" >> "$GITHUB_ENV"
+
+      - name: Download C++ SDK
+        run: VERSION="$VERSION" ./scripts/download.sh
+
+      - name: Build PDF
+        env:
+          CHROME_BIN: ${{ steps.setup-chrome.outputs.chrome-path }}
+          OUT_PDF: site/pdf/smrcore_sdk_zh.pdf
+        run: ./scripts/docs_pdf.sh
+
+      - name: Verify PDF
+        run: |
+          test -f site/pdf/smrcore_sdk_zh.pdf
+          pdfinfo site/pdf/smrcore_sdk_zh.pdf
+          # Fail if any local path leaked into the PDF text.
+          if pdftotext site/pdf/smrcore_sdk_zh.pdf - | grep -aE "file://|/home/"; then
+            echo "PDF text contains local paths" >&2
+            exit 1
+          fi
+          # Fail if any link annotation leaked (pdftotext cannot see these).
+          python3 - <<'PY'
+          from pypdf import PdfReader
+          r = PdfReader("site/pdf/smrcore_sdk_zh.pdf")
+          bad = 0
+          for page in r.pages:
+              for a in page.get("/Annots") or []:
+                  if a.get_object().get("/Subtype") == "/Link":
+                      bad += 1
+          if bad:
+              raise SystemExit(f"PDF still has {bad} link annotation(s)")
+          print("no link annotations: ok")
+          PY
+
+      - name: Upload PDF as workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: smrcore_sdk_zh_pdf
+          path: site/pdf/smrcore_sdk_zh.pdf
+
+      - name: Attach PDF to release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: site/pdf/smrcore_sdk_zh.pdf

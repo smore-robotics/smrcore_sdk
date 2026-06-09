@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<title>目录</title>
+<style>
+  @page { size: A4; margin: 0; }
+  html, body { margin: 0; padding: 0; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .page {
+    width: 210mm; height: 297mm; box-sizing: border-box;
+    padding: 40mm 30mm; position: relative; background: #ffffff; color: #14253f;
+    font-family: "Noto Sans CJK SC", "Source Han Sans SC", "PingFang SC",
+                 "Microsoft YaHei", "Segoe UI", Helvetica, Arial, sans-serif;
+  }
+  .brand { position: absolute; top: 26mm; right: 30mm;
+    font-size: 13px; letter-spacing: 1px; color: #8a98ab; }
+  .brand b { color: #1e3a63; }
+  .kicker { color: #b14a40; letter-spacing: 5px; text-transform: uppercase;
+    font-size: 13px; font-weight: 700; }
+  h1 { font-size: 46px; margin: 8px 0 0; color: #14253f; }
+  .bar { width: 76px; height: 4px; background: #b14a40; border-radius: 2px; margin: 18px 0 30px; }
+  ol { list-style: none; counter-reset: item; padding: 0; margin: 0; }
+  li { counter-increment: item; display: flex; align-items: baseline;
+    padding: 15px 2px; border-bottom: 1px solid #e7ecf3; }
+  li::before { content: counter(item, decimal-leading-zero);
+    color: #b14a40; font-weight: 700; width: 58px; font-size: 18px;
+    font-variant-numeric: tabular-nums; }
+  .name { flex: 1; font-size: 20px; color: #1c2c45; }
+  .tag { color: #8a98ab; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; }
+  .foot { position: absolute; bottom: 24mm; left: 30mm; right: 30mm;
+    font-size: 12px; color: #aab4c2; text-align: center; }
+</style>
+</head>
+<body>
+  <div class="page">
+    <div class="brand"><b>smrcore_sdk</b> 中文手册</div>
+    <div class="kicker">Contents</div>
+    <h1>目录</h1>
+    <div class="bar"></div>
+    <ol>
+      <li><span class="name">首页</span><span class="tag">指南</span></li>
+      <li><span class="name">安装</span><span class="tag">指南</span></li>
+      <li><span class="name">使用</span><span class="tag">指南</span></li>
+      <li><span class="name">示例总览</span><span class="tag">示例</span></li>
+      <li><span class="name">基础示例</span><span class="tag">示例</span></li>
+      <li><span class="name">运动示例</span><span class="tag">示例</span></li>
+      <li><span class="name">配置示例</span><span class="tag">示例</span></li>
+      <li><span class="name">柔顺控制示例</span><span class="tag">示例</span></li>
+      <li><span class="name">支持</span><span class="tag">支持</span></li>
+      <li><span class="name">API 参考</span><span class="tag">参考</span></li>
+    </ol>
+    <div class="foot">完整可点击目录见 PDF 书签（阅读器左侧大纲）</div>
+  </div>
+</body>
+</html>

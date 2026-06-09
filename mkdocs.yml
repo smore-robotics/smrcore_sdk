@@ -24,6 +24,11 @@ plugins:
             Install: 安装
             Usage: 使用
             Examples: 示例
+            Overview: 总览
+            Basics: 基础
+            Motion: 运动
+            Configuration: 配置
+            Compliance: 柔顺控制
             Support: 支持
             API Reference: API 参考
 
@@ -61,9 +66,17 @@ nav:
   - Home: index.md
   - Install: install.md
   - Usage: usage.md
-  - Examples: examples.md
+  - Examples:
+      - Overview: examples.md
+      - Basics: examples_basics.md
+      - Motion: examples_motion.md
+      - Configuration: examples_config.md
+      - Compliance: examples_compliance.md
   - Support: support.md
   - API Reference: api/index.md
+
+extra_css:
+  - assets/stylesheets/extra.css
 
 markdown_extensions:
   - admonition
@@ -74,3 +87,6 @@ markdown_extensions:
       permalink: true
   - pymdownx.highlight
   - pymdownx.superfences
+  - pymdownx.snippets:
+      base_path: .
+      check_paths: true
