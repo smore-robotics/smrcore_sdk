@@ -37,8 +37,16 @@ jobs:
       - name: Configure Pages
         uses: actions/configure-pages@v5
 
+      # Prefer the official release for .sdk-version; right after a release PR
+      # merges it may not be published yet, so fall back to candidate assets
+      # on the `prerelease` release (same content for the same version).
       - name: Download C++ SDK
-        run: ./scripts/download.sh
+        run: |
+          if ./scripts/download.sh; then
+            exit 0
+          fi
+          echo "Official release not available yet, falling back to prerelease assets"
+          SDK_RELEASE_TAG=prerelease ./scripts/download.sh
 
       - name: Build C++ API reference
         run: |

@@ -46,6 +46,15 @@ jobs:
           fi
           echo "VERSION=$version" >> "$GITHUB_ENV"
 
+      # Build the PDF from the docs as they were at the release tag, so
+      # re-running for an old version never picks up newer main docs.
+      - name: Checkout release tag
+        run: |
+          git fetch --force origin "refs/tags/v${VERSION}:refs/tags/v${VERSION}"
+          git checkout "v${VERSION}"
+
+      # Use VERSION= (not SDK_VERSION=) so this also works with the
+      # download.sh from older tags checked out above.
       - name: Download C++ SDK
         run: VERSION="$VERSION" ./scripts/download.sh
 
