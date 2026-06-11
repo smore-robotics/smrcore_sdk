@@ -14,12 +14,15 @@ Releases.
 | `docs/` | MkDocs site, bilingual (en + `*.zh.md` via mkdocs-static-i18n) |
 | `scripts/` | `download.sh`, `build.sh`, `docs_pdf.sh`, `check_python_examples.sh` |
 | `scripts/pdf/` | PDF cover/toc/divider templates + `bookmarks.py`, `stamp.py` |
-| `.github/workflows/` | `ci.yml` (build/test examples), `release-pdf.yml` (docs PDF) |
+| `.sdk-version` | SDK version (`x.y.z`) the docs/examples currently target |
+| `.github/workflows/` | `ci.yml` (PR candidate validation + main checks), `release-pdf.yml` (docs PDF), `release-smoke.yml` (official release verification) |
 
 ## Common tasks
 
 ```bash
-./scripts/download.sh              # fetch the C++ SDK (VERSION=x.y.z to pin)
+./scripts/download.sh              # fetch the C++ SDK pinned by .sdk-version
+VERSION=x.y.z ./scripts/download.sh            # pin a specific released version
+SDK_RELEASE_TAG=prerelease ./scripts/download.sh   # candidate assets (PR stage)
 ./scripts/build.sh                 # build the C++ examples
 mkdocs serve                       # preview the docs site
 mkdocs build --strict              # build docs (must pass with no warnings)
@@ -47,8 +50,15 @@ mkdocs build --strict              # build docs (must pass with no warnings)
 ## Releasing
 
 This public repository treats GitHub Releases as the source of published SDK
-assets. For each SDK version, confirm the release contains the expected public
-assets:
+assets. There are two release channels:
+
+- **`prerelease`** — a single rolling GitHub pre-release that holds *candidate*
+  assets for the version in `.sdk-version`. Only PR CI downloads from it.
+  Asset filenames always use the real version (e.g. `0.0.2`), never
+  `prerelease`.
+- **`v<version>`** — the official release users consume.
+
+Expected official release assets:
 
 - `smrcore_sdk-cpp-linux-x86_64-v<version>.tar.gz`
 - `smrcore_sdk-cpp-windows-x86_64-v<version>.tar.gz`
@@ -56,27 +66,51 @@ assets:
 - Windows Python wheel, for example `rcore_sdk_py-<version>-cp310-cp310-win_amd64.whl`
 - `smrcore_sdk-docs-zh-v<version>.pdf`
 
-From this repo's side, the documentation PDF is produced by `release-pdf.yml`.
-It downloads the public SDK archive, builds `smrcore_sdk-docs-zh-v<version>.pdf`,
-verifies there are no local-path leaks or PDF link annotations, and attaches the
-PDF to the GitHub Release. Re-run it for an existing tag with:
+### Release order (avoid the PR/release deadlock)
 
-```bash
-gh workflow run release-pdf.yml -f version=x.y.z
-```
+1. Internal pipeline produces the SDK assets for the new version.
+2. Upload candidate assets to the `prerelease` release (internal
+   `sync_smrcore_prerelease_to_github.sh`, not in this repo).
+3. Open a PR here updating `.sdk-version`, docs, and examples.
+4. PR CI (`ci.yml`) reads `.sdk-version` and downloads candidate assets from
+   `prerelease` to build/verify on Linux and Windows.
+5. Merge the PR. Pushes to `main` only run lightweight checks (docs build,
+   script syntax, `py_compile`) — they never depend on release assets.
+6. Tag the merge commit on `main` as `v<version>` and push the tag.
+7. Sync official assets to the `v<version>` release (internal
+   `sync_smrcore_release_to_github.sh`; it refuses to run unless the tag
+   exists and points at `main`).
+8. `release-pdf.yml` checks out the `v<version>` tag, builds
+   `smrcore_sdk-docs-zh-v<version>.pdf`, verifies no local-path leaks or PDF
+   link annotations, and attaches it to the release. Re-run with:
+
+   ```bash
+   gh workflow run release-pdf.yml -f version=x.y.z
+   ```
+
+9. `release-smoke.yml` verifies the official release end to end:
+
+   ```bash
+   gh workflow run release-smoke.yml -f version=x.y.z
+   ```
+
+10. Candidate assets stay on `prerelease` until the next cycle overwrites
+    them (the prerelease sync script removes stale assets first).
 
 Before considering a release complete, check:
 
-1. GitHub Release tag is `v<version>` and all asset filenames use the same
-   version.
-2. `./scripts/download.sh` succeeds with the default latest release.
-3. `VERSION=x.y.z ./scripts/download.sh` succeeds for the new version.
-4. `./scripts/build.sh` builds all C++ examples.
-5. `./scripts/check_python_examples.sh` succeeds.
-6. GitHub Actions `CI` is green on Linux and Windows.
-7. GitHub Actions `Release PDF` is green and the release contains the generated
-   PDF.
-8. `mkdocs build --strict` succeeds.
-9. Public docs do not mention private infrastructure, private repositories,
-   unpublished package locations, access tokens, local absolute paths, or
-   implementation details that are not already part of the public SDK/API.
+1. GitHub Release tag is `v<version>`, it points at `main`, and all asset
+   filenames use the same version.
+2. `.sdk-version` on `main` matches the released version.
+3. `./scripts/download.sh` succeeds (defaults to `.sdk-version`).
+4. `VERSION=x.y.z ./scripts/download.sh` succeeds for the new version.
+5. `./scripts/build.sh` builds all C++ examples.
+6. `./scripts/check_python_examples.sh` succeeds.
+7. GitHub Actions `CI` was green on the PR (Linux and Windows).
+8. GitHub Actions `Release PDF` is green and the release contains the
+   generated PDF.
+9. GitHub Actions `Release Smoke` is green for the new version.
+10. `mkdocs build --strict` succeeds.
+11. Public docs do not mention private infrastructure, private repositories,
+    unpublished package locations, access tokens, local absolute paths, or
+    implementation details that are not already part of the public SDK/API.
