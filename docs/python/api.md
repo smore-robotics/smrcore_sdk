@@ -80,12 +80,20 @@ state.positions                 # joint positions (sequence of 6)
 state.velocities                # joint velocities
 state.torques                   # joint torques
 state.tcp_pose                  # Pose
+state.cartesian_velocity        # TCP velocity v=J*qd [vx,vy,vz,wx,wy,wz], Base frame
 state.timestamp                 # float seconds
 
 robot.GetControlMode()          # int; 0 == Kinematics
 
 motor = robot.GetMotorStatus()  # MotorStatus
 motor.enabled, motor.estop, motor.error, motor.operational
+```
+
+Robot identity:
+
+```python
+info = robot.GetRobotInfo()
+info["robot_model"], info["robot_serial_number"], info["sdk_version"]
 ```
 
 ## Pose and Joint Data
@@ -116,12 +124,23 @@ target = Pose.from_euler(t, pose.rvec)
 
 ```python
 robot.MoveJ(jp)                       # joint-space planned motion
+robot.MoveRelativeJ(delta)            # joint-space relative motion (delta [rad])
 robot.MoveP(pose)                     # Cartesian point
 robot.MoveL(pose)                     # Cartesian line
 robot.MoveC(via, goal)                # Cartesian arc
+robot.MoveCByAngle(via, ref, angle)   # arc by center angle (3-point circle)
 robot.MovePath(waypoints)             # blended Cartesian path
 robot.ServoJ(jp)                      # 1 kHz joint streaming (returns None)
 robot.ServoP(pose)                    # 1 kHz Cartesian streaming (returns None)
+```
+
+`MoveJ` / `MoveP` / `MoveL` / `MoveC` / `MovePath` / `MoveJWaypoint` accept an
+optional `velocity_scale` keyword: `-1` (default) uses the controller's global velocity,
+a value in `(0, 1]` is multiplied onto the global velocity for that single
+motion only:
+
+```python
+robot.MoveJ(jp, velocity_scale=0.5)   # run this move at half the global velocity
 ```
 
 `MovePath` takes a list of dicts:
@@ -156,6 +175,39 @@ robot.AddWaypoint({"name": "p1", "joint_positions": [.. 6 ..]})
 robot.RemoveWaypoint("p1")
 ```
 
+Soft limits and safety switches. `Set*` only changes the values; protection is
+toggled separately with `Enable*` / `Disable*`:
+
+```python
+robot.GetSoftPositionLimit()          # dict: per-joint min/max [rad]
+robot.SetSoftPositionLimit(limit)     # Result
+robot.EnableSoftPositionLimit()       # Result; DisableSoftPositionLimit() to stop
+
+robot.GetSoftJointTorqueLimit()       # dict: per-joint torque base + percentage
+robot.SetSoftJointTorqueLimit(limit)  # Result
+robot.EnableSoftJointTorqueLimit()    # Result; DisableSoftJointTorqueLimit() to stop
+
+robot.EnableSelfCollision()           # Result; DisableSelfCollision() to stop
+robot.EnableVirtualWall()             # Result; DisableVirtualWall() to stop
+```
+
+## Frames
+
+Tool and workpiece/reference frame query and switching. These only change the
+current selection; frame definitions are maintained by robot configuration or
+calibration:
+
+```python
+robot.GetToolsInfo()                  # list[dict]; "is_active" marks the current tool
+robot.GetWorkpieceFramesInfo()        # list[dict]; candidates for reference frame
+robot.GetToolInfo("flange")           # dict | None; single tool frame by name
+robot.GetWorkpieceFrameInfo("base")   # dict | None; single workpiece frame by name
+robot.GetCurrentTool()                # str
+robot.GetCurrentReference()           # str
+robot.SetCurrentTool("flange")        # Result
+robot.SetCurrentReference("base")     # Result
+```
+
 ## Control and Compliance
 
 ```python
@@ -173,6 +225,8 @@ robot.DisableFdCartesianAdmittance()
 
 Force/torque sensor (required by force-led admittance):
 `robot.EnsureFtSensor()`, `robot.GetFtCalibration()`, `robot.ReleaseFtSensor()`.
+`robot.CalibrateEndTorqueSensorZero()` re-zeroes the end torque sensor; run it
+with no external load on the tool.
 
 ## Kinematics
 
@@ -184,4 +238,18 @@ check(result, "ForwardKinematics")
 
 result, joints = robot.InverseKinematics(pose)
 check(result, "InverseKinematics")
+```
+
+Jacobian and reachability return a dict carrying the `Result` fields
+(`success`, `error_code`, `error_msg`) plus the value:
+
+```python
+jac = robot.GetJacobian()
+if jac["success"]:
+    jac["jacobian"]                   # 6x6 list[list[float]], Base frame;
+                                      # rows 0-2 linear v, rows 3-5 angular w
+
+reach = robot.IsReachable(pose)
+if reach["success"]:
+    reach["reachable"]                # bool
 ```

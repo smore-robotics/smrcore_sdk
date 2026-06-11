@@ -35,7 +35,7 @@ python examples_py/basics/connect.py [robot_ip]
 | 源文件 | 作用 | 主要 API | 前置条件 | 适用场景 |
 |---|---|---|---|---|
 | `basics/connect.py` | 最小生命周期：连接、检查、断开 | `Initialize` / `IsConnected` / `Shutdown` | 无 | 安装 wheel 后的第一个连通性测试 |
-| `basics/read_state.py` | 读取状态快照 + 电机状态 | `GetState` / `GetMotorStatus` / `GetControlMode` | 无 | 检查机器人状态、位姿、电机标志 |
+| `basics/read_state.py` | 读取机器人信息 + 状态快照+ 电机状态 | `GetRobotInfo` / `GetState` / `GetMotorStatus` / `GetControlMode` | 无 | 检查机器人标识、状态、位姿、电机标志 |
 | `basics/linked_sdk.py` | 报告包版本与链接的原生 SDK 版本 | `rcore_sdk.__version__` / `_native.linked_sdk` | 无 | 报告问题前确认安装情况 |
 | `basics/error_recovery.py` | 恢复链 `EStop → Recover → ClearError → Enable` | `Enable` / `EStop` / `Recover` / `ClearError` | 无（会触发急停） | 理解完整恢复流程 |
 
@@ -48,13 +48,13 @@ TCP 移动几厘米。
 
 | 源文件 | 作用 | 主要 API | 前置条件 | 适用场景 |
 |---|---|---|---|---|
-| `motion/movej.py` | 关节空间到固定保守目标 | `MoveJ(JointPositions)` | — | 第一个规划运动示例 |
+| `motion/movej.py` | 关节空间到固定保守目标（演示单次 `velocity_scale`） | `MoveJ(JointPositions, velocity_scale=...)` | — | 第一个规划运动示例 |
 | `motion/movep.py` | 笛卡尔点动：当前位姿 +5cm(Z) | `MoveP(Pose)` / `Pose.from_euler` | — | 运动到笛卡尔目标位姿 |
 | `motion/movel.py` | 笛卡尔直线 +5cm(Y) | `MoveL(Pose)` | — | 执行一段直线笛卡尔运动 |
 | `motion/movec.py` | 经 via 到 goal 的圆弧 | `MoveC(via, goal)` | — | 执行一段小圆弧 |
 | `motion/move_path.py` | 多路点笛卡尔融合路径 | `MovePath(list[dict])` | — | 将多个笛卡尔路点作为一条路径执行 |
 | `motion/async_motion.py` | 异步运动 + 暂停/继续 + 状态轮询 | `MoveJ(asynchronous=True)` / `GetMotionTaskStatus` | — | 监控并控制正在执行的运动任务 |
-| `motion/kinematics.py` | 正/逆运动学（不运动） | `ForwardKinematics` / `InverseKinematics` | — | 不移动机器人求解 FK/IK |
+| `motion/kinematics.py` | 正/逆运动学 + 雅可比 + 可达性检查（不运动） | `ForwardKinematics` / `InverseKinematics` / `GetJacobian` / `IsReachable` | — | 不移动机器人查询运动学信息 |
 | `motion/servoj.py` | 关节空间高频伺服 | `ServoJ(JointPositions)` | — | 高频发送平滑关节目标 |
 | `motion/servop.py` | 笛卡尔空间高频伺服 | `ServoP(Pose)` | — | 高频发送平滑笛卡尔目标 |
 

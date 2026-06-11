@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
-"""motion/kinematics - forward and inverse kinematics (no motion).
+"""motion/kinematics - kinematics queries (no motion).
 
 Usage:
     python examples_py/motion/kinematics.py [robot_ip]
 
 ForwardKinematics maps joint positions to a TCP pose; InverseKinematics maps a
-TCP pose back to joint positions. Both return a (Result, value) tuple and do not
-move the robot.
+TCP pose back to joint positions. Both return a (Result, value) tuple.
+GetJacobian returns the 6x6 TCP geometric Jacobian and IsReachable pre-checks a
+Cartesian target; both return a dict carrying the Result fields plus the value.
 
 Safety note:
     This example only computes kinematics; it does not command any motion.
@@ -50,6 +51,18 @@ def main():
         result, ik_jp = robot.InverseKinematics(target)
         check(result, "InverseKinematics")
         print(f"IK joints [rad]: {' '.join(f'{v:.4f}' for v in ik_jp)}")
+
+        # TCP geometric Jacobian (6x6, Base frame): rows 0-2 linear velocity,
+        # rows 3-5 angular velocity, columns are joints 1..6.
+        jac = robot.GetJacobian()
+        if jac["success"]:
+            row0 = jac["jacobian"][0]
+            print(f"Jacobian row 0: {' '.join(f'{v:.4f}' for v in row0)}")
+
+        # Reachability pre-check: cheap test before commanding a motion.
+        reach = robot.IsReachable(target)
+        if reach["success"]:
+            print(f"Target reachable: {reach['reachable']}")
     finally:
         robot.Shutdown()
     return 0

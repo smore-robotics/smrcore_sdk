@@ -76,12 +76,20 @@ state.positions                 # 关节位置（6 个）
 state.velocities                # 关节速度
 state.torques                   # 关节力矩
 state.tcp_pose                  # Pose
+state.cartesian_velocity        # TCP 速度 v=J·qd [vx,vy,vz,wx,wy,wz]，Base 系
 state.timestamp                 # 浮点秒
 
 robot.GetControlMode()          # int；0 表示 Kinematics
 
 motor = robot.GetMotorStatus()  # MotorStatus
 motor.enabled, motor.estop, motor.error, motor.operational
+```
+
+机器人基础信息：
+
+```python
+info = robot.GetRobotInfo()
+info["robot_model"], info["robot_serial_number"], info["sdk_version"]
 ```
 
 ## 位姿与关节数据
@@ -112,12 +120,22 @@ target = Pose.from_euler(t, pose.rvec)
 
 ```python
 robot.MoveJ(jp)                       # 关节空间规划运动
+robot.MoveRelativeJ(delta)            # 关节空间相对运动（delta [rad]）
 robot.MoveP(pose)                     # 笛卡尔点动
 robot.MoveL(pose)                     # 笛卡尔直线
 robot.MoveC(via, goal)                # 笛卡尔圆弧
+robot.MoveCByAngle(via, ref, angle)   # 按圆心角圆弧（三点定圆）
 robot.MovePath(waypoints)             # 笛卡尔融合路径
 robot.ServoJ(jp)                      # 1kHz 关节流式（返回 None）
 robot.ServoP(pose)                    # 1kHz 笛卡尔流式（返回 None）
+```
+
+`MoveJ` / `MoveP` / `MoveL` / `MoveC` / `MovePath` / `MoveJWaypoint` 接受可选的
+`velocity_scale` 关键字参数：`-1`（默认）使用控制器全局速度，`(0, 1]` 区间的值仅对这一次运动
+额外乘到全局速度上：
+
+```python
+robot.MoveJ(jp, velocity_scale=0.5)   # 这一次运动以全局速度的一半执行
 ```
 
 `MovePath` 接收 dict 列表：
@@ -152,6 +170,38 @@ robot.AddWaypoint({"name": "p1", "joint_positions": [.. 6 ..]})
 robot.RemoveWaypoint("p1")
 ```
 
+软限位与安全开关。`Set*` 只修改参数值，保护开关由 `Enable*` / `Disable*`
+独立切换：
+
+```python
+robot.GetSoftPositionLimit()          # dict：各关节位置上下限 [rad]
+robot.SetSoftPositionLimit(limit)     # Result
+robot.EnableSoftPositionLimit()       # Result；DisableSoftPositionLimit() 停用
+
+robot.GetSoftJointTorqueLimit()       # dict：各关节力矩基准值 + 百分比系数
+robot.SetSoftJointTorqueLimit(limit)  # Result
+robot.EnableSoftJointTorqueLimit()    # Result；DisableSoftJointTorqueLimit() 停用
+
+robot.EnableSelfCollision()           # Result；DisableSelfCollision() 停用
+robot.EnableVirtualWall()             # Result；DisableVirtualWall() 停用
+```
+
+## 坐标系（Frames）
+
+工具系 / 工件参考系的查询与切换。只改变当前选择，不修改坐标系定义（定义由
+机器人配置或标定流程维护）：
+
+```python
+robot.GetToolsInfo()                  # list[dict]；"is_active" 标记当前工具
+robot.GetWorkpieceFramesInfo()        # list[dict]；参考系候选集合
+robot.GetToolInfo("flange")           # dict | None；按名称查询单个工具系
+robot.GetWorkpieceFrameInfo("base")   # dict | None；按名称查询单个工件系
+robot.GetCurrentTool()                # str
+robot.GetCurrentReference()           # str
+robot.SetCurrentTool("flange")        # Result
+robot.SetCurrentReference("base")     # Result
+```
+
 ## 控制与柔顺（Compliance）
 
 ```python
@@ -169,6 +219,8 @@ robot.DisableFdCartesianAdmittance()
 
 力/力矩传感器（力主导导纳所需）：`robot.EnsureFtSensor()`、
 `robot.GetFtCalibration()`、`robot.ReleaseFtSensor()`。
+`robot.CalibrateEndTorqueSensorZero()` 用于重新标定末端力矩传感器零点，
+执行时工具端应无外部负载。
 
 ## 运动学（Kinematics）
 
@@ -180,4 +232,18 @@ check(result, "ForwardKinematics")
 
 result, joints = robot.InverseKinematics(pose)
 check(result, "InverseKinematics")
+```
+
+雅可比与可达性检查返回携带 `Result` 字段（`success`、`error_code`、
+`error_msg`）及取值的 dict：
+
+```python
+jac = robot.GetJacobian()
+if jac["success"]:
+    jac["jacobian"]                   # 6x6 list[list[float]]，Base 系；
+                                      # 行 0-2 线速度 v，行 3-5 角速度 w
+
+reach = robot.IsReachable(pose)
+if reach["success"]:
+    reach["reachable"]                # bool
 ```

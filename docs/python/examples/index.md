@@ -38,7 +38,7 @@ See the full source walkthrough: [Basics Examples](basics.md)
 | Source | Shows | Main APIs | Prerequisites | When to use |
 |---|---|---|---|---|
 | `basics/connect.py` | Minimal lifecycle: connect, check, disconnect | `Initialize` / `IsConnected` / `Shutdown` | none | First smoke test after installing the wheel |
-| `basics/read_state.py` | Read state snapshot + motor status | `GetState` / `GetMotorStatus` / `GetControlMode` | none | Check robot state, pose, and motor flags |
+| `basics/read_state.py` | Read robot info + state snapshot + motor status | `GetRobotInfo` / `GetState` / `GetMotorStatus` / `GetControlMode` | none | Check robot identity, state, pose, and motor flags |
 | `basics/linked_sdk.py` | Report package and linked native SDK versions | `rcore_sdk.__version__` / `_native.linked_sdk` | none | Confirm the install before reporting a bug |
 | `basics/error_recovery.py` | Recovery chain `EStop → Recover → ClearError → Enable` | `Enable` / `EStop` / `Recover` / `ClearError` | none (it triggers an e-stop) | Understand the full recovery sequence |
 
@@ -51,13 +51,13 @@ See the full source walkthrough: [Motion Examples](motion.md)
 
 | Source | Shows | Main APIs | Prerequisites | When to use |
 |---|---|---|---|---|
-| `motion/movej.py` | Joint-space move to a fixed conservative target | `MoveJ(JointPositions)` | — | First planned motion example |
+| `motion/movej.py` | Joint-space move to a fixed conservative target (with per-move `velocity_scale`) | `MoveJ(JointPositions, velocity_scale=...)` | — | First planned motion example |
 | `motion/movep.py` | Cartesian point move: current pose +5 cm (Z) | `MoveP(Pose)` / `Pose.from_euler` | — | Move to a Cartesian target pose |
 | `motion/movel.py` | Cartesian line move +5 cm (Y) | `MoveL(Pose)` | — | Execute a straight Cartesian segment |
 | `motion/movec.py` | Cartesian arc through a via pose to a goal | `MoveC(via, goal)` | — | Execute a small circular arc |
 | `motion/move_path.py` | Blended Cartesian path (stop/blend waypoints) | `MovePath(list[dict])` | — | Run multiple Cartesian waypoints as one path |
 | `motion/async_motion.py` | Async move + pause/continue + status polling | `MoveJ(asynchronous=True)` / `GetMotionTaskStatus` | — | Monitor and control a running motion task |
-| `motion/kinematics.py` | Forward / inverse kinematics (no motion) | `ForwardKinematics` / `InverseKinematics` | — | Solve FK/IK without moving |
+| `motion/kinematics.py` | FK / IK + Jacobian + reachability check (no motion) | `ForwardKinematics` / `InverseKinematics` / `GetJacobian` / `IsReachable` | — | Kinematics queries without moving |
 | `motion/servoj.py` | Joint-space servo streaming | `ServoJ(JointPositions)` | — | Stream smooth joint targets |
 | `motion/servop.py` | Cartesian-space servo streaming | `ServoP(Pose)` | — | Stream smooth Cartesian targets |
 

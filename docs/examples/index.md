@@ -32,7 +32,7 @@ See the full source walkthrough: [Basics Examples](basics.md)
 | Source | Shows | Main APIs | Prerequisites | When to use |
 |---|---|---|---|---|
 | `basics/connect.cpp` | Minimal lifecycle: connect, check, disconnect | `Initialize` / `IsConnected` / `Shutdown` | none | First smoke test after installing the SDK |
-| `basics/read_state.cpp` | Read one full state snapshot + motor status | `GetState` / `GetMotorStatus` | none | Check robot state, pose, errors, and motor flags |
+| `basics/read_state.cpp` | Read robot info + one full state snapshot + motor status | `GetRobotInfo` / `GetState` / `GetMotorStatus` | none | Check robot identity, state, pose, errors, and motor flags |
 | `basics/error_recovery.cpp` | Recovery chain `EStop → Recover → ClearError → Enable` | `Enable` / `EStop` / `Recover` / `ClearError` | none (it triggers an e-stop) | Understand the full recovery sequence |
 
 ## Motion
@@ -44,11 +44,11 @@ See the full source walkthrough: [Motion Examples](motion.md)
 
 | Source | Shows | Main APIs | Prerequisites | When to use |
 |---|---|---|---|---|
-| `motion/movej.cpp` | Joint-space move to a fixed conservative target | `MoveJ(JointPositions)` | — | First planned motion example |
+| `motion/movej.cpp` | Joint-space move to a fixed conservative target (with per-move `velocity_scale`) | `MoveJ(JointPositions, async, velocity_scale)` | — | First planned motion example |
 | `motion/movep.cpp` | Cartesian point move: current pose +5 cm (Z) | `MoveP(Pose)` / `Pose::FromEuler` | — | Move to a Cartesian target pose |
 | `motion/movel.cpp` | Cartesian line move +5 cm (Y) | `MoveL(Pose)` | — | Execute a straight Cartesian segment |
 | `motion/movec.cpp` | Cartesian arc through a via pose to a goal | `MoveC(via, goal)` | — | Execute a small circular arc |
-| `motion/motion_api.cpp` | Motion domain handle + FK/IK | `Motion()` / `ForwardKinematics` / `InverseKinematics` / `MoveP` | — | Use the domain API directly and inspect FK/IK |
+| `motion/motion_api.cpp` | Motion domain handle + FK/IK + Jacobian + reachability check | `Motion()` / `ForwardKinematics` / `InverseKinematics` / `GetJacobian` / `IsReachable` / `MoveP` | — | Use the domain API directly and inspect kinematics |
 | `motion/move_path.cpp` | Blended Cartesian path (stop/blend waypoints) | `MovePath(vector<CartesianWaypoint>)` | — | Run multiple Cartesian waypoints as one path |
 | `motion/async_motion.cpp` | Async move + pause/continue + status polling | `MoveJ(async)` / `GetMotionTaskStatus` / `Pause`/`ContinueMotion` | — | Monitor and control a running motion task |
 | `motion/servoj.cpp` | 1 kHz joint-space servo streaming | `ServoJ(JointPositions)` | — | Stream smooth joint targets at high frequency |

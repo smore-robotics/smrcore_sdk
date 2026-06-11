@@ -29,7 +29,7 @@
 | 源文件 | 作用 | 主要 API | 前置条件 | 适用场景 |
 |---|---|---|---|---|
 | `basics/connect.cpp` | 最小生命周期：连接、检查、断开 | `Initialize` / `IsConnected` / `Shutdown` | 无 | 安装 SDK 后的第一个连通性测试 |
-| `basics/read_state.cpp` | 读取一次完整状态快照 + 电机状态 | `GetState` / `GetMotorStatus` | 无 | 检查位姿、错误、电机标志等状态 |
+| `basics/read_state.cpp` | 读取机器人信息 + 完整状态快照+ 电机状态 | `GetRobotInfo` / `GetState` / `GetMotorStatus` | 无 | 检查机器人标识、位姿、错误、电机标志等状态 |
 | `basics/error_recovery.cpp` | 恢复链 `EStop → Recover → ClearError → Enable` | `Enable` / `EStop` / `Recover` / `ClearError` | 无（会触发急停） | 理解完整恢复流程 |
 
 ## 运动（motion）
@@ -41,11 +41,11 @@ TCP 移动几厘米。
 
 | 源文件 | 作用 | 主要 API | 前置条件 | 适用场景 |
 |---|---|---|---|---|
-| `motion/movej.cpp` | 关节空间到固定保守目标 | `MoveJ(JointPositions)` | — | 第一个规划运动示例 |
+| `motion/movej.cpp` | 关节空间到固定保守目标（演示单次 `velocity_scale`） | `MoveJ(JointPositions, async, velocity_scale)` | — | 第一个规划运动示例 |
 | `motion/movep.cpp` | 笛卡尔点动：当前位姿 +5cm(Z) | `MoveP(Pose)` / `Pose::FromEuler` | — | 运动到笛卡尔目标位姿 |
 | `motion/movel.cpp` | 笛卡尔直线 +5cm(Y) | `MoveL(Pose)` | — | 执行一段直线笛卡尔运动 |
 | `motion/movec.cpp` | 经 via 到 goal 的圆弧 | `MoveC(via, goal)` | — | 执行一段小圆弧 |
-| `motion/motion_api.cpp` | Motion 句柄 + 正/逆运动学 | `Motion()` / `ForwardKinematics` / `InverseKinematics` / `MoveP` | — | 直接使用领域 API 并查看 FK/IK |
+| `motion/motion_api.cpp` | Motion 句柄 + 正/逆运动学 + 雅可比 + 可达性检查 | `Motion()` / `ForwardKinematics` / `InverseKinematics` / `GetJacobian` / `IsReachable` / `MoveP` | — | 直接使用领域 API 并查看运动学信息 |
 | `motion/move_path.cpp` | 多路点笛卡尔融合路径 | `MovePath(vector<CartesianWaypoint>)` | — | 将多个笛卡尔路点作为一条路径执行 |
 | `motion/async_motion.cpp` | 异步运动 + 暂停/继续 + 状态轮询 | `MoveJ(async)` / `GetMotionTaskStatus` / `Pause`·`ContinueMotion` | — | 监控并控制正在执行的运动任务 |
 | `motion/servoj.cpp` | 1kHz 关节空间高频伺服 | `ServoJ(JointPositions)` | — | 高频发送平滑关节目标 |

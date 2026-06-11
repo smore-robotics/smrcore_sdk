@@ -42,8 +42,11 @@ def main():
         target = JointPositions([0.0, -1.5708, 1.5708, -1.5708, -1.5708, 0.0])
         print(f"MoveJ target [rad]: {' '.join(f'{v:.4f}' for v in target)}")
 
-        # Synchronous mode: block until the motion finishes.
-        check(robot.MoveJ(target), "MoveJ")
+        # Synchronous mode: block until the motion finishes. The optional
+        # velocity_scale (0,1] multiplies the controller's global velocity for
+        # this single motion only; 0.5 here halves it. Omit it to use the
+        # global velocity unchanged.
+        check(robot.MoveJ(target, velocity_scale=0.5), "MoveJ")
         print("MoveJ completed")
     finally:
         robot.Shutdown()

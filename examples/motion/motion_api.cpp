@@ -4,7 +4,8 @@
 //
 // The curated shortcuts (robot.MoveJ/MoveL/...) cover the common cases, but the
 // full motion capability lives on the Motion domain handle. This example shows
-// the domain entry point together with forward/inverse kinematics.
+// the domain entry point together with forward/inverse kinematics, the TCP
+// Jacobian, and a reachability pre-check.
 //
 // Safety note: this example commands a small Cartesian move from the current
 // pose. Verify the workspace is clear before running.
@@ -109,12 +110,39 @@ int main(int argc, char **argv)
                          ik.GetErrorCode(), ik.GetErrorMsg().c_str());
         }
 
+        // TCP geometric Jacobian (6x6, Base frame): rows 0-2 linear velocity,
+        // rows 3-5 angular velocity, columns are joints 1..6.
+        rcore::sdk::Jacobian jacobian;
+        auto jac = motion.GetJacobian(jacobian);
+        if (jac.IsSuccess())
+        {
+            std::printf("Jacobian row 0:");
+            for (size_t col = 0; col < 6; ++col)
+            {
+                std::printf(" %.4f", jacobian(0, col));
+            }
+            std::printf("\n");
+        }
+
+        // Reachability pre-check: cheap test before commanding the motion.
+        bool reachable = false;
+        auto reach = motion.IsReachable(target, reachable);
+        if (!reach.IsSuccess() || !reachable)
+        {
+            std::fprintf(stderr, "Target not reachable, aborting move\n");
+            robot.Disable();
+            robot.Shutdown();
+            return 1;
+        }
+        std::printf("Target reachable: true\n");
+
         // Move via the domain handle (equivalent to robot.MoveP(target)).
         auto result = motion.MoveP(target);
         if (!result.IsSuccess())
         {
             std::fprintf(stderr, "MoveP failed: code=%u msg=%s\n",
                          result.GetErrorCode(), result.GetErrorMsg().c_str());
+            robot.Disable();
             robot.Shutdown();
             return 1;
         }

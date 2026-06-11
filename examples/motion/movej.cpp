@@ -66,8 +66,12 @@ int main(int argc, char **argv)
         }
         std::printf("\n");
 
-        // Synchronous mode: block until the motion finishes.
-        auto result = robot.MoveJ(target);
+        // Synchronous mode: block until the motion finishes. The optional
+        // velocity_scale (0,1] multiplies the controller's global velocity for
+        // this single motion only; 0.5 here halves it. Omit it (or pass -1) to
+        // use the global velocity unchanged.
+        auto result = robot.MoveJ(target, /*async=*/false,
+                                  /*velocity_scale=*/0.5);
         if (!result.IsSuccess())
         {
             std::fprintf(stderr, "MoveJ failed: code=%u msg=%s\n",

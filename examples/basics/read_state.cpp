@@ -1,5 +1,5 @@
-// basics/read_state - read robot state and motor status: GetState /
-// GetMotorStatus
+// basics/read_state - read robot info, state, and motor status: GetRobotInfo /
+// GetState / GetMotorStatus
 //
 // Usage: ./basics_read_state [robot_ip]
 
@@ -19,6 +19,12 @@ int main(int argc, char **argv)
         std::fprintf(stderr, "Initialize failed\n");
         return 1;
     }
+
+    // Basic robot identity: model, serial number, and the SDK version.
+    const auto info = robot.GetRobotInfo();
+    std::printf("Robot model: %s  serial: %s  sdk: %s\n",
+                info.robot_model.c_str(), info.robot_serial_number.c_str(),
+                info.sdk_version.c_str());
 
     // Full state snapshot: joints, Cartesian pose, errors, and control mode.
     const auto state = robot.GetState();
@@ -46,6 +52,9 @@ int main(int argc, char **argv)
     std::printf("TCP orientation [rad]: %.4f %.4f %.4f\n",
                 state.cartesian_orientation[0], state.cartesian_orientation[1],
                 state.cartesian_orientation[2]);
+
+    // TCP velocity v=J*qd [vx,vy,vz,wx,wy,wz], expressed in the Base frame.
+    print_joints("TCP velocity [m/s,rad/s]", state.cartesian_velocity);
 
     std::printf("Control mode: %d\n", static_cast<int>(state.control_mode));
     std::printf("Timestamp [s]: %.3f\n", state.timestamp);
