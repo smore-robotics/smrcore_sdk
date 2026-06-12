@@ -27,7 +27,7 @@ Install the wheel matching your Python ABI and platform directly from a GitHub
 Release:
 
 ```bash
-VERSION=0.0.1  # replace with the release version you want
+VERSION=0.0.3  # replace with the release version you use
 PY_TAG=cp310-cp310-linux_x86_64   # Windows: cp310-cp310-win_amd64
 python3 -m pip install \
   "https://github.com/smore-robotics/smrcore_sdk/releases/download/v${VERSION}/rcore_sdk_py-${VERSION}-${PY_TAG}.whl"

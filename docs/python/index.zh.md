@@ -23,7 +23,7 @@ Python 绑定有自己的约定，详见 [Python API 摘要](api.md)：
 直接从 GitHub Release 安装与 Python ABI 和平台匹配的 wheel：
 
 ```bash
-VERSION=0.0.1  # 按需替换为目标发布版本
+VERSION=0.0.3  # 替换为你所使用的 SDK 版本
 PY_TAG=cp310-cp310-linux_x86_64   # Windows: cp310-cp310-win_amd64
 python3 -m pip install \
   "https://github.com/smore-robotics/smrcore_sdk/releases/download/v${VERSION}/rcore_sdk_py-${VERSION}-${PY_TAG}.whl"

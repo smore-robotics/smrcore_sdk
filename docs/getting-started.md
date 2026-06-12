@@ -31,14 +31,15 @@ SDK assets are published on GitHub Releases:
 https://github.com/smore-robotics/smrcore_sdk/releases
 ```
 
-Each release contains C++ SDK archives, a Python wheel, and the documentation
-PDF:
+Each release contains C++ SDK archives, a Python wheel, a local simulator,
+and the documentation PDF:
 
 | Asset | Description |
 |---|---|
 | `smrcore_sdk-cpp-linux-x86_64-v<version>.tar.gz` | C++ SDK for Linux x86_64 |
 | `smrcore_sdk-cpp-windows-x86_64-v<version>.tar.gz` | C++ SDK for Windows x86_64 |
 | `rcore_sdk_py-<version>-<python-tags>.whl` | Python wheel (per Python ABI / platform) |
+| `smrcore-simulator-linux-x86_64-v<version>.tar.gz` | Local simulator — see [No Robot? Use the Simulator](#simulator) |
 | `smrcore_sdk-docs-zh-v<version>.pdf` | Chinese documentation (this manual) |
 
 ## C++ SDK {#c-sdk}
@@ -55,7 +56,7 @@ By default this downloads the latest C++ SDK release and extracts it to
 `3rdparty/smrcore_sdk/`. To pin a version:
 
 ```bash
-VERSION=0.0.1 ./scripts/download.sh
+VERSION=0.0.3 ./scripts/download.sh
 ```
 
 For manual installation, download the asset for your platform and extract it to
@@ -125,7 +126,7 @@ int main()
 Download the wheel matching your Python ABI and platform:
 
 ```bash
-VERSION=0.0.1  # replace with the release version you want
+VERSION=0.0.3  # replace with the release version you use
 PY_TAG=cp310-cp310-linux_x86_64   # Windows: cp310-cp310-win_amd64
 curl -L --fail \
   "https://github.com/smore-robotics/smrcore_sdk/releases/download/v${VERSION}/rcore_sdk_py-${VERSION}-${PY_TAG}.whl" \
@@ -155,6 +156,63 @@ if not robot.Initialize(""):
 print(f"connected={robot.IsConnected()}")
 robot.Shutdown()
 ```
+
+## No Robot? Use the Simulator {#simulator}
+
+You can use the full SDK without physical hardware: release assets include a
+Linux simulator package that exposes exactly the same interface as a real
+robot. No SDK code changes are required.
+
+### Install and Run (Linux x86_64)
+
+!!! warning "Version pairing"
+    The simulator version **must match the SDK version exactly**. Always
+    download both from the same release page. The simulator is available
+    starting from release 0.0.3.
+
+```bash
+VERSION=0.0.3  # replace with the SDK version you use
+curl -L --fail \
+  "https://github.com/smore-robotics/smrcore_sdk/releases/download/v${VERSION}/smrcore-simulator-linux-x86_64-v${VERSION}.tar.gz" \
+  -o smrcore-simulator.tar.gz
+tar -xzf smrcore-simulator.tar.gz
+cd smrcore-simulator
+./run_simulator.sh            # with 3D viewer
+# ./run_simulator.sh --no-gui # headless (servers / CI)
+```
+
+The only system dependency is the OpenGL runtime (preinstalled on desktop
+distributions); minimal server/container environments need:
+
+```bash
+sudo apt install libgl1
+```
+
+### Connect to the Simulator
+
+When the simulator and your SDK program run on the same machine, pass an
+**empty IP** to `Initialize`:
+
+```python
+from rcore_sdk import Robot
+
+robot = Robot()
+robot.Initialize("")   # empty string = connect to the local simulator
+```
+
+Same for C++ examples: run `./build/basics_connect` without the `robot_ip`
+argument. All motion examples (`movej` / `movel` / `movep` / `movec` /
+`move_path` / async motion / kinematics queries) and the config examples run
+directly against the simulator.
+
+### Differences from a Real Robot
+
+- The simulator has **no force/torque sensor enabled**: the
+  `fd_cartesian_admittance` (force-led admittance) example cannot run;
+  `EnsureFtSensor` returns error code 5301.
+- Friction and contact behavior differ from real hardware. The simulator
+  validates **interfaces and logic** — it is not a substitute for real-robot
+  tuning.
 
 ## Next Steps
 

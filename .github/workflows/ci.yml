@@ -26,6 +26,7 @@ jobs:
             cmake \
             curl \
             g++ \
+            libgl1 \
             python3 \
             python3-pip
 
@@ -78,6 +79,19 @@ jobs:
 
       - name: Check Python examples
         run: ./scripts/check_python_examples.sh
+
+      # Run the stable example subset against the packaged simulator.
+      # Since 0.0.3, simulator assets are part of the release contract.
+      - name: Download simulator
+        run: |
+          asset="smrcore-simulator-linux-x86_64-v${VERSION}.tar.gz"
+          url="https://github.com/smore-robotics/smrcore_sdk/releases/download/${RELEASE_TAG}/${asset}"
+          curl -L --fail --show-error "$url" -o "$asset"
+          tar -xzf "$asset"
+          echo "SIM_DIR=$PWD/smrcore-simulator" >> "$GITHUB_ENV"
+
+      - name: Run examples against simulator
+        run: SIM_DIR="$SIM_DIR" ./scripts/run_examples_against_sim.sh
 
   windows-sdk-smoke:
     if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'

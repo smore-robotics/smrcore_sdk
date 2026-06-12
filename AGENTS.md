@@ -37,7 +37,7 @@ mkdocs build --strict              # build docs (must pass with no warnings)
 - **Release asset names:** `smrcore_sdk-cpp-<os>-x86_64-v<version>.tar.gz`,
   `rcore_sdk_py-<version>-<python-tags>.whl`,
   `smrcore_sdk-docs-zh-v<version>.pdf`.
-- **Docs version snippets** use `VERSION=0.0.1  # replace as needed` — they are
+- **Docs version snippets** use `VERSION=0.0.3  # replace as needed` — they are
   illustrative and are *not* edited per release.
 - **Bilingual docs:** every `docs/foo.md` has a matching `docs/foo.zh.md`. Add
   new nav entries to both `nav` and `nav_translations` in `mkdocs.yml`.
@@ -64,16 +64,31 @@ Expected official release assets:
 - `smrcore_sdk-cpp-windows-x86_64-v<version>.tar.gz`
 - Linux Python wheel, for example `rcore_sdk_py-<version>-cp310-cp310-linux_x86_64.whl`
 - Windows Python wheel, for example `rcore_sdk_py-<version>-cp310-cp310-win_amd64.whl`
+- `smrcore-simulator-linux-x86_64-v<version>.tar.gz` (local simulator;
+  lets users run examples without hardware)
 - `smrcore_sdk-docs-zh-v<version>.pdf`
+
+The simulator tarball embeds a `VERSION` file that must equal the release
+version; the internal sync scripts verify it and abort on mismatch. The
+simulator is built from the rcore repository tagged with the **same**
+`x.y.z` version as the SDK.
 
 ### Release order (avoid the PR/release deadlock)
 
-1. Internal pipeline produces the SDK assets for the new version.
+1. Internal pipelines produce the SDK assets **and the Linux simulator**
+   for the new version. The rcore repository must be tagged with the same
+   `x.y.z` so the simulator's embedded `VERSION` matches.
 2. Upload candidate assets to the `prerelease` release (internal
-   `sync_smrcore_prerelease_to_github.sh`, not in this repo).
+   `sync_smrcore_prerelease_to_github.sh`, not in this repo). The sync
+   expects 5 assets (C++ tarball x2 + wheel x2 + Linux simulator) and
+   verifies the simulator's embedded `VERSION`.
 3. Open a PR here updating `.sdk-version`, docs, and examples.
 4. PR CI (`ci.yml`) reads `.sdk-version` and downloads candidate assets from
-   `prerelease` to build/verify on Linux and Windows.
+   `prerelease` to build/verify on Linux and Windows. On Linux it also runs
+   the stable example subset (the `EXAMPLES` list inside
+   `scripts/run_examples_against_sim.sh`) against the
+   candidate simulator (skips with a warning only if the simulator asset is
+   absent from `prerelease`).
 5. Merge the PR. Pushes to `main` only run lightweight checks (docs build,
    script syntax, `py_compile`) — they never depend on release assets.
 6. Tag the merge commit on `main` as `v<version>` and push the tag.
@@ -109,7 +124,10 @@ Before considering a release complete, check:
 7. GitHub Actions `CI` was green on the PR (Linux and Windows).
 8. GitHub Actions `Release PDF` is green and the release contains the
    generated PDF.
-9. GitHub Actions `Release Smoke` is green for the new version.
+9. GitHub Actions `Release Smoke` is green for the new version. Its Linux
+   job downloads the released simulator, checks the embedded `VERSION`, and
+   runs the stable example subset against it — this is the real
+   SDK <-> simulator pairing proof for the release.
 10. `mkdocs build --strict` succeeds.
 11. Public docs do not mention private infrastructure, private repositories,
     unpublished package locations, access tokens, local absolute paths, or
