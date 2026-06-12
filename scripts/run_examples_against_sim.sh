@@ -62,6 +62,12 @@ fail() {
 [[ -x "${SIM_DIR}/run_simulator.sh" ]] || fail "missing ${SIM_DIR}/run_simulator.sh"
 [[ -x "${ROOT_DIR}/build/basics_connect" ]] || fail "C++ examples not built (run scripts/build.sh first)"
 
+# A second simulator on the same DDS domain makes examples talk to a mix of
+# both instances, causing baffling intermittent failures. Refuse to start.
+if pgrep -x app_mujoco_traj >/dev/null 2>&1; then
+    fail "another app_mujoco_traj is already running; stop it first (pgrep -a app_mujoco_traj)"
+fi
+
 SIM_PID=""
 cleanup() {
     if [[ -n "${SIM_PID}" ]] && kill -0 "${SIM_PID}" 2>/dev/null; then
@@ -75,6 +81,11 @@ dump_logs() {
     echo "---- simulator log (tail) ----" >&2
     tail -30 "${SIM_LOG}" >&2 || true
 }
+
+# Simulator packages <= 0.0.3 default the machine origin config to
+# /var/lib/rcore/machine, which an unprivileged runner cannot create.
+# Redirect it into the package dir; newer launchers do this themselves.
+export RCORE_MACHINE_ORIGIN_CONFIG_PATH="${RCORE_MACHINE_ORIGIN_CONFIG_PATH:-${SIM_DIR}/machine/origin_offsets.ini}"
 
 echo "-> starting simulator (headless): ${SIM_DIR}"
 "${SIM_DIR}/run_simulator.sh" --no-gui >"${SIM_LOG}" 2>&1 &
@@ -98,17 +109,18 @@ run_one() {
     log="/tmp/sim_example_$(basename "${target}" .py).log"
 
     # Pose reset: examples are pose/order dependent (Phase 0 audit). Retried
-    # because enabling right after the previous example's Shutdown can hit a
-    # transient mode-switch race.
+    # generously: the controller may keep the previous client's task listed
+    # as active for several seconds after its Shutdown, rejecting new Move
+    # commands ("存在活动任务") until it clears.
     if [[ "${target}" != "basics_connect" ]]; then
         local reset_ok=0
-        for _ in 1 2 3; do
+        for _ in 1 2 3 4 5; do
             if timeout "${EXAMPLE_TIMEOUT}" "${ROOT_DIR}/build/motion_movej" \
                 >/tmp/sim_pose_reset.log 2>&1; then
                 reset_ok=1
                 break
             fi
-            sleep 2
+            sleep 3
         done
         if [[ "${reset_ok}" != "1" ]]; then
             echo "---- pose reset output ----" >&2
@@ -116,6 +128,9 @@ run_one() {
             dump_logs
             fail "pose reset (motion_movej) failed before ${target}"
         fi
+        # Let the reset's task fully clear before the example enables,
+        # otherwise its first Move can be rejected with "active task exists".
+        sleep 3
     fi
 
     echo "-> [${kind}] ${target}"
