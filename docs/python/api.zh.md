@@ -222,6 +222,30 @@ robot.DisableFdCartesianAdmittance()
 `robot.CalibrateEndTorqueSensorZero()` 用于重新标定末端力矩传感器零点，
 执行时工具端应无外部负载。
 
+## 末端功能板（End Board）
+
+`robot.EndBoard()` 返回 RAW485、Modbus RTU 夹爪便捷接口和两路数字 IO 的公开门面。
+只执行操作的调用返回 `Result`；读取操作返回 `(Result, value)`：
+
+```python
+end_board = robot.EndBoard()
+
+result, state = end_board.IOGetDigitalIoState()
+if result:
+    print(state.di_bits, state.do_echo_bits, state.timestamp)
+
+result, response = end_board.RAW485_Transceive(
+    bytes([0x01, 0x03, 0x00, 0x00, 0x00, 0x01]),
+    append_crc=True,
+    timeout_ms=1000,
+)
+if result:
+    print(response.frame)
+```
+
+返回的不可变数据类型为 `EndBoardDigitalIoState` 和 `EndBoardRaw485Response`。
+完整公开方法分组、参数限制和设备安全说明见[末端功能板示例](examples/end-board.md)。
+
 ## 运动学（Kinematics）
 
 FK 与 IK 返回 `(Result, value)` 元组，且不会移动机器人：

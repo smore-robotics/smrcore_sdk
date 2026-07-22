@@ -228,6 +228,32 @@ Force/torque sensor (required by force-led admittance):
 `robot.CalibrateEndTorqueSensorZero()` re-zeroes the end torque sensor; run it
 with no external load on the tool.
 
+## End Board
+
+`robot.EndBoard()` returns the public facade for RAW485, Modbus RTU gripper
+helpers, and two-channel digital IO. Operation-only calls return `Result`; reads
+return `(Result, value)`:
+
+```python
+end_board = robot.EndBoard()
+
+result, state = end_board.IOGetDigitalIoState()
+if result:
+    print(state.di_bits, state.do_echo_bits, state.timestamp)
+
+result, response = end_board.RAW485_Transceive(
+    bytes([0x01, 0x03, 0x00, 0x00, 0x00, 0x01]),
+    append_crc=True,
+    timeout_ms=1000,
+)
+if result:
+    print(response.frame)
+```
+
+The returned immutable data types are `EndBoardDigitalIoState` and
+`EndBoardRaw485Response`. See [End Board Examples](examples/end-board.md) for
+the complete public method map, parameter limits, and device-safety notes.
+
 ## Kinematics
 
 FK and IK return a `(Result, value)` tuple and do not move the robot:

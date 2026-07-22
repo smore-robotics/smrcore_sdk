@@ -20,7 +20,8 @@
 5. `motion/servoj.cpp` 或 `motion/servop.cpp` —— 了解高频伺服目标流。
 6. `config/config_limits.cpp`、`config/waypoints.cpp`、`config/payload.cpp`
    —— 熟悉常用运行时配置接口。
-7. 基础流程清楚后，再继续看其它运动示例和力控示例。
+7. 连接对应硬件后，运行 `end_board/io_state.cpp` —— 读取末端功能板数字 IO 快照。
+8. 基础流程清楚后，再继续看其它运动示例和力控示例。
 
 ## 基础（basics）
 
@@ -60,6 +61,14 @@ TCP 移动几厘米。
 | `config/config_limits.cpp` | 读取/修改/校验/恢复运动限制（恢复原值） | `Get`/`SetVelocityPercentage` / `GetMaxVelocity` / `GetCartesianLimits` | 无 | 查看和调整运行时运动限制 |
 | `config/waypoints.cpp` | 命名点位增/列/删（命名空间化，拒绝同名覆盖） | `GetWaypoints` / `AddWaypoint` / `RemoveWaypoint` | 无 | 管理命名关节点位，不触发运动 |
 | `config/payload.cpp` | 设/读/清末端负载（退出前恢复原值） | `GetPayload` / `SetPayload` / `ClearPayload` | 无 | 为动力学相关功能设置负载参数 |
+
+## 末端功能板（end_board）
+
+查看完整源码讲解和公开 API 分组：[末端功能板示例](end-board.md)
+
+| 源文件 | 作用 | 主要 API | 前置条件 | 适用场景 |
+|---|---|---|---|---|
+| `end_board/io_state.cpp` | 读取一次两路数字 IO 快照 | `InitializeEndBoardOnly` / `EndBoard` / `IOGetDigitalIoState` | 兼容的末端功能板 | 不改变输出地验证末端功能板通信并查看 DI/DO 回显 |
 
 ## 力控（compliance）
 

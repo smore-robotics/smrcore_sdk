@@ -22,7 +22,9 @@ If you are new to the SDK, read and run the examples in this order:
    streaming.
 6. `config/config_limits.cpp`, `config/waypoints.cpp`, and `config/payload.cpp`
    — learn the common runtime configuration APIs.
-7. Continue with the remaining motion and compliance examples when the basic
+7. `end_board/io_state.cpp` — read the end-board digital IO snapshot when the
+   matching hardware is connected.
+8. Continue with the remaining motion and compliance examples when the basic
    workflow is clear.
 
 ## Basics
@@ -63,6 +65,15 @@ See the full source walkthrough: [Configuration Examples](config.md)
 | `config/config_limits.cpp` | Read/modify/verify/restore motion limits (restores originals) | `Get`/`SetVelocityPercentage` / `GetMaxVelocity` / `GetCartesianLimits` | none | Inspect and adjust runtime motion limits |
 | `config/waypoints.cpp` | Add/list/remove named waypoints (namespaced name, refuses to overwrite) | `GetWaypoints` / `AddWaypoint` / `RemoveWaypoint` | none | Manage named joint poses without moving |
 | `config/payload.cpp` | Set/read/clear end-effector payload (restores original on exit) | `GetPayload` / `SetPayload` / `ClearPayload` | none | Set payload parameters for dynamics-aware features |
+
+## End Board
+
+See the full source walkthrough and public API map:
+[End Board Examples](end-board.md)
+
+| Source | Shows | Main APIs | Prerequisites | When to use |
+|---|---|---|---|---|
+| `end_board/io_state.cpp` | Read one two-channel digital IO snapshot | `InitializeEndBoardOnly` / `EndBoard` / `IOGetDigitalIoState` | compatible end board | Verify end-board communication and inspect DI/DO echo without changing outputs |
 
 ## Compliance
 
