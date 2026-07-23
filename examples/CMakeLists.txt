@@ -26,6 +26,7 @@ set(SMRCORE_SDK_EXAMPLES
     config/config_limits
     config/waypoints
     config/payload
+    end_board/io_state
     compliance/cartesian_impedance
     compliance/fd_cartesian_admittance
 )

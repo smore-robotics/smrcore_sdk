@@ -26,7 +26,8 @@ python examples_py/basics/connect.py [robot_ip]
 5. `motion/servoj.py` 或 `motion/servop.py` —— 了解高频伺服目标流。
 6. `config/config_limits.py`、`config/waypoints.py`、`config/payload.py`
    —— 熟悉常用运行时配置接口。
-7. 基础流程清楚后，再继续看其它运动示例和力控示例。
+7. 连接对应硬件后，运行 `end_board/io_state.py` —— 读取末端功能板数字 IO 快照。
+8. 基础流程清楚后，再继续看其它运动示例和力控示例。
 
 ## 基础（basics）
 
@@ -67,6 +68,14 @@ TCP 移动几厘米。
 | `config/config_limits.py` | 读取/修改/校验/恢复运动限制 | `Get`/`SetVelocityPercentage` / `GetMaxVelocity` / `GetCartesianLimits` | 无 | 查看和调整运行时运动限制 |
 | `config/waypoints.py` | 命名点位增/列/删（拒绝同名覆盖） | `GetWaypoints` / `AddWaypoint` / `RemoveWaypoint` | 无 | 管理命名关节点位，不触发运动 |
 | `config/payload.py` | 设/读/恢复末端负载 | `GetPayload` / `SetPayload` / `ClearPayload` | 无 | 为动力学相关功能设置负载参数 |
+
+## 末端功能板（end_board）
+
+查看完整源码讲解和 Python 调用方式：[末端功能板示例](end-board.md)
+
+| 源文件 | 作用 | 主要 API | 前置条件 | 适用场景 |
+|---|---|---|---|---|
+| `end_board/io_state.py` | 读取一次两路数字 IO 快照 | `EndBoard` / `IOGetDigitalIoState` | 兼容的末端功能板 | 不改变输出地验证末端功能板通信并查看 DI/DO 回显 |
 
 ## 力控（compliance）
 

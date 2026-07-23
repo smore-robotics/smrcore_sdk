@@ -28,7 +28,9 @@ If you are new to the SDK, read and run the examples in this order:
    streaming.
 6. `config/config_limits.py`, `config/waypoints.py`, and `config/payload.py`
    — learn the common runtime configuration APIs.
-7. Continue with the remaining motion and compliance examples when the basic
+7. `end_board/io_state.py` — read the end-board digital IO snapshot when the
+   matching hardware is connected.
+8. Continue with the remaining motion and compliance examples when the basic
    workflow is clear.
 
 ## Basics
@@ -70,6 +72,15 @@ See the full source walkthrough: [Configuration Examples](config.md)
 | `config/config_limits.py` | Read/modify/verify/restore motion limits | `Get`/`SetVelocityPercentage` / `GetMaxVelocity` / `GetCartesianLimits` | none | Inspect and adjust runtime motion limits |
 | `config/waypoints.py` | Add/list/remove named waypoints (refuses to overwrite) | `GetWaypoints` / `AddWaypoint` / `RemoveWaypoint` | none | Manage named joint poses without moving |
 | `config/payload.py` | Set/read/restore end-effector payload | `GetPayload` / `SetPayload` / `ClearPayload` | none | Set payload parameters for dynamics-aware features |
+
+## End Board
+
+See the full source walkthrough and Python calling patterns:
+[End Board Examples](end-board.md)
+
+| Source | Shows | Main APIs | Prerequisites | When to use |
+|---|---|---|---|---|
+| `end_board/io_state.py` | Read one two-channel digital IO snapshot | `EndBoard` / `IOGetDigitalIoState` | compatible end board | Verify end-board communication and inspect DI/DO echo without changing outputs |
 
 ## Compliance
 
