@@ -23,7 +23,7 @@ int main(int argc, char **argv)
     // Basic robot identity: model, serial number, and the SDK version.
     const auto info = robot.GetRobotInfo();
     std::printf("Robot model: %s  serial: %s  sdk: %s\n",
-                info.robot_model.c_str(), info.robot_serial_number.c_str(),
+                info.robot_model.c_str(), info.robot_body_serial_number.c_str(),
                 info.sdk_version.c_str());
 
     // Full state snapshot: joints, Cartesian pose, errors, and control mode.

@@ -93,7 +93,7 @@ Robot identity:
 
 ```python
 info = robot.GetRobotInfo()
-info["robot_model"], info["robot_serial_number"], info["sdk_version"]
+info["robot_model"], info["robot_body_serial_number"], info["sdk_version"]
 ```
 
 ## Pose and Joint Data

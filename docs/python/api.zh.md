@@ -89,7 +89,7 @@ motor.enabled, motor.estop, motor.error, motor.operational
 
 ```python
 info = robot.GetRobotInfo()
-info["robot_model"], info["robot_serial_number"], info["sdk_version"]
+info["robot_model"], info["robot_body_serial_number"], info["sdk_version"]
 ```
 
 ## 位姿与关节数据

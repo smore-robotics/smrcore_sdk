@@ -29,7 +29,7 @@ def main():
     info = robot.GetRobotInfo()
     print(
         f"Robot model: {info['robot_model']}  "
-        f"serial: {info['robot_serial_number']}  sdk: {info['sdk_version']}"
+        f"serial: {info['robot_body_serial_number']}  sdk: {info['sdk_version']}"
     )
 
     state = robot.GetState()

@@ -165,7 +165,7 @@ bool ParseArgs(int argc, char **argv, AppConfig &config)
     return true;
 }
 
-bool FailResult(const char *label, const rcore::sdk::Result &result)
+bool FailResult(const char *label, rcore::sdk::Result &result)
 {
     std::fprintf(stderr, "%s failed: code=%u msg=%s\n", label,
                  result.GetErrorCode(), result.GetErrorMsg().c_str());
