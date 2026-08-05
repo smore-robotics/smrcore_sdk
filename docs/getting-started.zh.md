@@ -200,8 +200,10 @@ C++ 示例同理：`./build/basics_connect`（不传 `robot_ip` 参数）。
 
 ### 与真机的差异
 
-- 模拟器**未启用力/力矩传感器**：`fd_cartesian_admittance`
-  （力主导导纳）示例无法运行，`EnsureFtSensor` 会返回错误码 5301。
+- 模拟器**无外置力/力矩传感器**：默认的 `fd_cartesian_admittance` 路径
+  （`joint_torque_estimated` + `--mode pose`）仍可运行。仅
+  `--wrench-source ft_sensor` 依赖外置力路径；此时在模拟器上
+  `EnsureFtSensor` 会返回错误码 5301。
 - 摩擦、接触等物理行为与真实硬件存在差异；模拟器验证的是
   **接口与逻辑**，不能替代真机调试。
 

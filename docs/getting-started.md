@@ -207,9 +207,10 @@ directly against the simulator.
 
 ### Differences from a Real Robot
 
-- The simulator has **no force/torque sensor enabled**: the
-  `fd_cartesian_admittance` (force-led admittance) example cannot run;
-  `EnsureFtSensor` returns error code 5301.
+- The simulator has **no external force/torque sensor**: the default
+  `fd_cartesian_admittance` path (`joint_torque_estimated` + `--mode pose`)
+  can still run. Only `--wrench-source ft_sensor` needs an external F/T path;
+  `EnsureFtSensor` then returns error code 5301 on the simulator.
 - Friction and contact behavior differ from real hardware. The simulator
   validates **interfaces and logic** — it is not a substitute for real-robot
   tuning.

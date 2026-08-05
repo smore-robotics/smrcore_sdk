@@ -216,17 +216,33 @@ robot.EnableCartesianImpedance({"stiffness": [.. 6 ..], "damping": [.. 6 ..]})
 robot.SetCartesianImpedanceTarget(pose)   # servo-like, stream continuously
 robot.DisableCartesianImpedance()
 
-# Force-led Cartesian admittance: Enable takes no arguments; set params first.
-robot.UpdateFdCartesianAdmittanceParams({"stiffness": [.. 6 ..], "kp": [.. 6 ..]})
-robot.EnableFdCartesianAdmittance()
+# Force-led Cartesian admittance (FDCC).
+# Default wrench source is joint_torque_estimated (no peripherals).
+# Set the wrench source BEFORE Enable.
+robot.SetFdCartesianAdmittanceWrenchSource(
+    FdCartesianAdmittanceWrenchSourceJointTorqueEstimated)  # or ...FtSensor
+robot.EnableFdCartesianAdmittance({"stiffness": [.. 6 ..], "kp": [.. 6 ..]})
 robot.SetFdCartesianAdmittancePoseTarget(pose)
+robot.SetFdCartesianAdmittanceTeleopSource(TeleopInputSourceSpaceMouse)  # optional
 robot.DisableFdCartesianAdmittance()
 ```
 
-Force/torque sensor (required by force-led admittance):
-`robot.EnsureFtSensor()`, `robot.GetFtCalibration()`, `robot.ReleaseFtSensor()`.
-`robot.CalibrateEndTorqueSensorZero()` re-zeroes the end torque sensor; run it
-with no external load on the tool.
+Wrench sources:
+
+- `FdCartesianAdmittanceWrenchSourceJointTorqueEstimated` (default) — no
+  peripherals repository required; optionally call
+  `robot.CalibrateEndTorqueSensorZero()` with no external load.
+- `FdCartesianAdmittanceWrenchSourceFtSensor` — **requires** a one-time saved
+  calibration from
+  [smrcore_peripherals](https://github.com/smore-robotics/smrcore_peripherals),
+  then a running bridge that streams samples. APIs:
+  `robot.EnsureFtSensor()`, `robot.GetFtCalibration()`,
+  `robot.TareFtCalibration()`, `robot.ReleaseFtSensor()`. Never enable this
+  source without a valid calibration — incorrect wrench is dangerous.
+
+SpaceMouse teleop also requires
+[smrcore_peripherals](https://github.com/smore-robotics/smrcore_peripherals)
+`app_peripherals_bridge` to inject samples.
 
 ## End Board
 

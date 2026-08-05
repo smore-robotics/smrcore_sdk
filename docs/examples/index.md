@@ -85,7 +85,7 @@ See the full source walkthrough: [Compliance Examples](compliance.md)
 | Source | Shows | Main APIs | Prerequisites | When to use |
 |---|---|---|---|---|
 | `compliance/cartesian_impedance.cpp` | Cartesian impedance (CST); equilibrium streamed servo-style +5 cm in Z and back | `EnableCartesianImpedance` / `SetCartesianImpedanceTarget` (streamed) / `DisableCartesianImpedance` | — | Try conservative Cartesian impedance behaviour |
-| `compliance/fd_cartesian_admittance.cpp` | Force-led Cartesian admittance (driven by measured wrench) | `EnsureFtSensor` / `Enable`·`SetPoseTarget`·`Disable` `FdCartesianAdmittance` | six-axis F/T sensor installed + saved FT calibration | Try force-led Cartesian admittance with an F/T sensor |
+| `compliance/fd_cartesian_admittance.cpp` | Force-led Cartesian admittance (FDCC); default joint-torque wrench + pose demo; optional external F/T / SpaceMouse | `SetFdCartesianAdmittanceWrenchSource` / `Enable`·`SetPoseTarget`·`Disable` `FdCartesianAdmittance` | default: none; `ft_sensor` / `spacemouse`: [smrcore_peripherals](https://github.com/smore-robotics/smrcore_peripherals) (calib once for F/T) | Try FDCC without peripherals first; add external F/T or SpaceMouse when needed |
 
 ## Building and Running
 

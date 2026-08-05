@@ -26,14 +26,37 @@
 
 ### 作用
 
-基于力传感的笛卡尔导纳控制：读取当前 TCP，按示例参数进入导纳模式，发送一个小位
-移目标后退出。
+力主导笛卡尔导纳（FDCC）。默认使用 **关节力矩估算** 力源，并运行 +5 cm Z
+位姿演示——**不需要**外设仓库。
+
+可选进阶路径：
+
+| 路径 | 用法 | 是否需要 [smrcore_peripherals](https://github.com/smore-robotics/smrcore_peripherals) |
+|---|---|---|
+| 基础（默认） | `--wrench-source joint_torque_estimated`（默认）+ `--mode pose` | 否 |
+| 外置六维力 | 先一次性标定 `--save`，再 bridge `--ft-sensor`，再 `--wrench-source ft_sensor` | 是 |
+| SpaceMouse 遥操 | bridge `--spacemouse`（或默认双外设），再 `--mode spacemouse` | 是 |
+
+**外置力传感器安全要求：** 使用 `--wrench-source ft_sensor` 前 **必须** 在
+`smrcore_peripherals` 完成一次静态标定并 `--save`。未标定的外力十分危险，可导致
+大幅非预期运动。标定保存后，日常只需保持 bridge 推送采样，再运行本示例。
+
+```bash
+# 一次性标定
+app_peripherals_bridge --robot <ip> --ft-sensor
+app_peripherals_ft_sensor_calib --robot-ip <ip> --save
+
+# 日常：推送采样后跑 FDCC
+app_peripherals_bridge --robot <ip> --ft-sensor
+./build/compliance_fd_cartesian_admittance <ip> --wrench-source ft_sensor
+```
+
+刚度 / kp 为源码中的保守常量，请直接改源码调参（无增益 CLI）。
 
 ### 适用场景
 
 - 需要根据外力顺应运动的拖动/装配类任务。
-
-> 前置条件：需要已安装并标定的六维力传感器。
+- 先从默认关节力矩路径上手；需要更高保真外力或遥操时再接外置 F/T / SpaceMouse。
 
 ### 完整源码
 

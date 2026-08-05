@@ -79,7 +79,7 @@ TCP 移动几厘米。
 | 源文件 | 作用 | 主要 API | 前置条件 | 适用场景 |
 |---|---|---|---|---|
 | `compliance/cartesian_impedance.cpp` | 笛卡尔阻抗(CST)；平衡点 servo 流式沿 Z +5cm 往返 | `EnableCartesianImpedance` / `SetCartesianImpedanceTarget`（流式） / `DisableCartesianImpedance` | — | 体验保守参数下的笛卡尔阻抗行为 |
-| `compliance/fd_cartesian_admittance.cpp` | 力主导笛卡尔导纳（由实测六维力驱动） | `EnsureFtSensor` / `FdCartesianAdmittance` 的 `Enable`·`SetPoseTarget`·`Disable` | 需装六维力传感器 + 已保存 FT 标定 | 使用六维力传感器体验力主导笛卡尔导纳 |
+| `compliance/fd_cartesian_admittance.cpp` | 力主导笛卡尔导纳（FDCC）；默认关节力矩力源 + 位姿演示；可选外置 F/T / SpaceMouse | `SetFdCartesianAdmittanceWrenchSource` / `FdCartesianAdmittance` 的 `Enable`·`SetPoseTarget`·`Disable` | 默认无需外设；`ft_sensor` / `spacemouse` 需 [smrcore_peripherals](https://github.com/smore-robotics/smrcore_peripherals)（外置力须先标定一次） | 先无外设体验 FDCC；需要时再接外置 F/T 或 SpaceMouse |
 
 ## 构建与运行
 

@@ -4,8 +4,9 @@
 
 Compliance examples use torque/force control. Start with the conservative
 parameters provided, keep the workspace clear, and keep the e-stop reachable.
-`fd_cartesian_admittance.py` additionally requires a six-axis force/torque sensor
-and a saved, active FT-sensor calibration.
+The default `fd_cartesian_admittance.py` path uses joint-torque estimated wrench
+and does **not** require peripherals. External F/T and SpaceMouse paths require
+[smrcore_peripherals](https://github.com/smore-robotics/smrcore_peripherals).
 
 ## cartesian_impedance
 
@@ -29,15 +30,30 @@ mode is disabled. Parameters are a dict with `stiffness` and `damping`.
 
 ### What It Does
 
-Force-led Cartesian admittance: the TCP is driven by a measured six-axis force
-while tracking a commanded pose. It ensures the FT sensor, validates the
-calibration, sets conservative parameters, enables the mode, then commands a
-+5 cm Z target and back. `EnableFdCartesianAdmittance()` takes no arguments;
-parameters are set via `UpdateFdCartesianAdmittanceParams`.
+Force-led Cartesian admittance (FDCC). Defaults:
+
+- `--wrench-source joint_torque_estimated` (no peripherals)
+- `--mode pose` (+5 cm Z target demo)
+
+`EnableFdCartesianAdmittance({...})` takes the params dict (stiffness / kp /
+…). Select the wrench source with `SetFdCartesianAdmittanceWrenchSource`
+**before** enable.
+
+Advanced:
+
+- `--wrench-source ft_sensor`: **must** calibrate once in
+  [smrcore_peripherals](https://github.com/smore-robotics/smrcore_peripherals)
+  (`app_peripherals_ft_sensor_calib --save`), then keep
+  `app_peripherals_bridge --ft-sensor` streaming samples. Uncalibrated external
+  wrench is dangerous.
+- `--mode spacemouse`: requires bridge `--spacemouse` (or default dual
+  peripherals) to inject SpaceMouse samples.
+
+Edit stiffness / kp in the source to tune; there is no gain CLI.
 
 ### When to Use
 
-- Try force-led Cartesian admittance with an F/T sensor.
+- Try FDCC without peripherals first; add external F/T or SpaceMouse when needed.
 
 ### Full Source
 
