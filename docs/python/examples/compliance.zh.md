@@ -2,20 +2,21 @@
 
 ## 运行前
 
-力控示例使用力矩/力控制。请先用示例给出的保守参数起步，清空工作区，并确保急停
-可触达。`fd_cartesian_admittance.py` 还需要一个六维力/力矩传感器以及已保存且生效
-的 FT 标定。
+柔顺控制示例会使用力/力矩控制。请从保守参数起步、清空工作区、保证急停可触达。
+默认的 `fd_cartesian_admittance.py` 使用关节力矩估算力源，**不需要**外设仓库。
+外置 F/T 与 SpaceMouse 路径需要
+[smrcore_peripherals](https://github.com/smore-robotics/smrcore_peripherals)。
 
 ## cartesian_impedance
 
 ### 作用
 
-笛卡尔阻抗（力矩）控制。TCP 在平衡位姿附近表现为弹簧-阻尼；平衡点被流式发送沿 Z
-+5cm 往返，随后退出该模式。参数为带 `stiffness` 和 `damping` 的字典。
+笛卡尔阻抗（力矩）控制。TCP 在平衡位姿附近表现为弹簧阻尼；示例将平衡点沿 Z
+流式移动 +5 cm 再移回，然后退出。参数为含 `stiffness` / `damping` 的 dict。
 
 ### 适用场景
 
-- 体验保守参数下的笛卡尔阻抗行为。
+- 体验保守的笛卡尔阻抗行为。
 
 ### 完整源码
 
@@ -27,14 +28,28 @@
 
 ### 作用
 
-力主导笛卡尔导纳：TCP 由实测六维力驱动，同时跟踪指令位姿。示例确保 FT 传感器、
-校验标定、设置保守参数、使能该模式，然后指令一个 +5cm 的 Z 目标并返回。
-`EnableFdCartesianAdmittance()` 不接受参数；参数通过
-`UpdateFdCartesianAdmittanceParams` 设置。
+力主导笛卡尔导纳（FDCC）。默认：
+
+- `--wrench-source joint_torque_estimated`（无需外设）
+- `--mode pose`（+5 cm Z 目标演示）
+
+`EnableFdCartesianAdmittance({...})` 接受参数 dict（stiffness / kp / …）。
+启用前用 `SetFdCartesianAdmittanceWrenchSource` 选择力源。
+
+进阶：
+
+- `--wrench-source ft-sensor`：**必须**先在
+  [smrcore_peripherals](https://github.com/smore-robotics/smrcore_peripherals)
+  完成一次标定（`app_peripherals_ft_sensor_calib --save`），再保持
+  `app_peripherals_bridge --ft-sensor` 推送采样。未标定外力十分危险。
+- `--mode spacemouse`：需要 bridge `--spacemouse`（或默认双外设）注入
+  SpaceMouse 采样。
+
+刚度 / kp 请在源码中修改；无增益 CLI。
 
 ### 适用场景
 
-- 使用六维力传感器体验力主导笛卡尔导纳。
+- 先用默认关节力矩路径体验 FDCC；需要外置力或遥操时再接 F/T / SpaceMouse。
 
 ### 完整源码
 

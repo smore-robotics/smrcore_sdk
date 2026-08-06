@@ -66,7 +66,7 @@ any directory. Use that directory as `CMAKE_PREFIX_PATH` when building.
 
 ```bash
 ./scripts/build.sh
-./build/basics_connect [robot_ip]   # omit robot_ip for local simulation
+./build/basics_connect [--robot-ip <ip>]   # omit --robot-ip for local simulation
 ```
 
 ### Use in Your CMake Project
@@ -200,16 +200,17 @@ robot = Robot()
 robot.Initialize("")   # empty string = connect to the local simulator
 ```
 
-Same for C++ examples: run `./build/basics_connect` without the `robot_ip`
+Same for C++ examples: run `./build/basics_connect` without `--robot-ip`
 argument. All motion examples (`movej` / `movel` / `movep` / `movec` /
 `move_path` / async motion / kinematics queries) and the config examples run
 directly against the simulator.
 
 ### Differences from a Real Robot
 
-- The simulator has **no force/torque sensor enabled**: the
-  `fd_cartesian_admittance` (force-led admittance) example cannot run;
-  `EnsureFtSensor` returns error code 5301.
+- The simulator has **no external force/torque sensor**: the default
+  `fd_cartesian_admittance` path (`joint_torque_estimated` + `--mode pose`)
+  can still run. Only `--wrench-source ft-sensor` needs an external F/T path;
+  `EnsureFtSensor` then returns error code 5301 on the simulator.
 - Friction and contact behavior differ from real hardware. The simulator
   validates **interfaces and logic** — it is not a substitute for real-robot
   tuning.
@@ -267,7 +268,7 @@ and robot controller/runtime were built from compatible versions.
 
 ### Local Simulation
 
-For local simulation, omit `robot_ip` in examples:
+For local simulation, omit `--robot-ip` in examples:
 
 ```bash
 ./build/basics_connect

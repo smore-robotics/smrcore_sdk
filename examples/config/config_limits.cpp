@@ -1,6 +1,6 @@
 // config/config_limits - read, modify, verify and restore motion limits
 //
-// Usage: ./config_config_limits [robot_ip]
+// Usage: ./config_config_limits [--robot-ip <ip>]
 //
 // Demonstrates the Config domain: joint max velocity, joint velocity
 // percentage, and Cartesian limits. The example reads the current values,
@@ -30,7 +30,20 @@ void PrintArray(const char *label, const std::array<double, 6> &a)
 
 int main(int argc, char **argv)
 {
-    const std::string robot_ip = (argc > 1) ? argv[1] : "";
+    std::string robot_ip;
+    for (int i = 1; i < argc; ++i)
+    {
+        const std::string arg = argv[i];
+        if (arg == "--robot-ip" && i + 1 < argc)
+        {
+            robot_ip = argv[++i];
+        }
+        else
+        {
+            std::fprintf(stderr, "Usage: %s [--robot-ip <ip>]\n", argv[0]);
+            return 1;
+        }
+    }
 
     try
     {

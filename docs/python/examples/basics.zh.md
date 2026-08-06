@@ -2,7 +2,7 @@
 
 ## 运行前
 
-请先安装 wheel（见 [Python SDK](../index.md)）。省略 `robot_ip` 即可连接本机
+请先安装 wheel（见 [Python SDK](../index.md)）。省略 `--robot-ip` 即可连接本机
 仿真器。`error_recovery.py` 会主动触发急停，请清空工作区、保证急停可触达。
 
 ## connect

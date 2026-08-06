@@ -1,7 +1,7 @@
 // basics/read_state - read robot info, state, and motor status: GetRobotInfo /
 // GetState / GetMotorStatus
 //
-// Usage: ./basics_read_state [robot_ip]
+// Usage: ./basics_read_state [--robot-ip <ip>]
 
 #include "sdk/robot.hpp"
 
@@ -11,7 +11,20 @@
 
 int main(int argc, char **argv)
 {
-    const std::string robot_ip = (argc > 1) ? argv[1] : "";
+    std::string robot_ip;
+    for (int i = 1; i < argc; ++i)
+    {
+        const std::string arg = argv[i];
+        if (arg == "--robot-ip" && i + 1 < argc)
+        {
+            robot_ip = argv[++i];
+        }
+        else
+        {
+            std::fprintf(stderr, "Usage: %s [--robot-ip <ip>]\n", argv[0]);
+            return 1;
+        }
+    }
 
     rcore::sdk::Robot robot;
     if (!robot.Initialize(robot_ip))
@@ -23,7 +36,7 @@ int main(int argc, char **argv)
     // Basic robot identity: model, serial number, and the SDK version.
     const auto info = robot.GetRobotInfo();
     std::printf("Robot model: %s  serial: %s  sdk: %s\n",
-                info.robot_model.c_str(), info.robot_serial_number.c_str(),
+                info.robot_model.c_str(), info.robot_body_serial_number.c_str(),
                 info.sdk_version.c_str());
 
     // Full state snapshot: joints, Cartesian pose, errors, and control mode.

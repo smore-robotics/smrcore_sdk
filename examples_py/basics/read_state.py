@@ -2,12 +2,13 @@
 """basics/read_state - read robot info, state, and motor status.
 
 Usage:
-    python examples_py/basics/read_state.py [robot_ip]
+    python examples_py/basics/read_state.py [--robot-ip <ip>]
 
 Reads the most commonly used fields: robot identity, joint state, TCP pose and
 velocity, control mode, and motor hardware status.
 """
 
+import argparse
 import sys
 
 from rcore_sdk import Robot
@@ -18,7 +19,14 @@ def fmt(values):
 
 
 def main():
-    robot_ip = sys.argv[1] if len(sys.argv) > 1 else ""
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--robot-ip",
+        default="",
+        help="Robot IP (omit for local simulation)",
+    )
+    args = parser.parse_args()
+    robot_ip = args.robot_ip
 
     robot = Robot()
     if not robot.Initialize(robot_ip):
@@ -29,7 +37,7 @@ def main():
     info = robot.GetRobotInfo()
     print(
         f"Robot model: {info['robot_model']}  "
-        f"serial: {info['robot_serial_number']}  sdk: {info['sdk_version']}"
+        f"serial: {info['robot_body_serial_number']}  sdk: {info['sdk_version']}"
     )
 
     state = robot.GetState()

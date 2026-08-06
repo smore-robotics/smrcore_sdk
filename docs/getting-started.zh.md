@@ -63,7 +63,7 @@ VERSION=0.0.3 ./scripts/download.sh
 
 ```bash
 ./scripts/build.sh
-./build/basics_connect [robot_ip]   # 省略 robot_ip 即为本机仿真
+./build/basics_connect [--robot-ip <ip>]   # 省略 --robot-ip 即为本机仿真
 ```
 
 ### 接入你的 CMake 工程
@@ -194,14 +194,16 @@ robot = Robot()
 robot.Initialize("")   # 空字符串 = 连接本机模拟器
 ```
 
-C++ 示例同理：`./build/basics_connect`（不传 `robot_ip` 参数）。
+C++ 示例同理：`./build/basics_connect`（不传 `--robot-ip` 参数）。
 所有运动类示例（`movej` / `movel` / `movep` / `movec` / `move_path` /
 异步运动 / 运动学查询）以及配置类示例均可直接在模拟器上运行。
 
 ### 与真机的差异
 
-- 模拟器**未启用力/力矩传感器**：`fd_cartesian_admittance`
-  （力主导导纳）示例无法运行，`EnsureFtSensor` 会返回错误码 5301。
+- 模拟器**无外置力/力矩传感器**：默认的 `fd_cartesian_admittance` 路径
+  （`joint_torque_estimated` + `--mode pose`）仍可运行。仅
+  `--wrench-source ft-sensor` 依赖外置力路径；此时在模拟器上
+  `EnsureFtSensor` 会返回错误码 5301。
 - 摩擦、接触等物理行为与真实硬件存在差异；模拟器验证的是
   **接口与逻辑**，不能替代真机调试。
 
@@ -258,7 +260,7 @@ controller/runtime 是兼容版本。
 
 ### 本机仿真
 
-本机仿真时，示例可以省略 `robot_ip`：
+本机仿真时，示例可以省略 `--robot-ip`：
 
 ```bash
 ./build/basics_connect

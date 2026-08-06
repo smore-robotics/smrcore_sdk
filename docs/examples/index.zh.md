@@ -1,7 +1,7 @@
 # 示例
 
 示例按主题分组放在 `examples/`（C++）下，每个构建为 `build/<目录>_<名称>`
-（例如 `basics/connect.cpp` → `build/basics_connect`）。省略 `robot_ip` 即可连接
+（例如 `basics/connect.cpp` → `build/basics_connect`）。省略 `--robot-ip` 即可连接
 本机仿真器。
 
 每个示例源文件顶部的注释才是完整参考（用法、行为、安全提示）。下表按示例概括它
@@ -79,7 +79,7 @@ TCP 移动几厘米。
 | 源文件 | 作用 | 主要 API | 前置条件 | 适用场景 |
 |---|---|---|---|---|
 | `compliance/cartesian_impedance.cpp` | 笛卡尔阻抗(CST)；平衡点 servo 流式沿 Z +5cm 往返 | `EnableCartesianImpedance` / `SetCartesianImpedanceTarget`（流式） / `DisableCartesianImpedance` | — | 体验保守参数下的笛卡尔阻抗行为 |
-| `compliance/fd_cartesian_admittance.cpp` | 力主导笛卡尔导纳（由实测六维力驱动） | `EnsureFtSensor` / `FdCartesianAdmittance` 的 `Enable`·`SetPoseTarget`·`Disable` | 需装六维力传感器 + 已保存 FT 标定 | 使用六维力传感器体验力主导笛卡尔导纳 |
+| `compliance/fd_cartesian_admittance.cpp` | 力主导笛卡尔导纳（FDCC）；默认关节力矩力源 + 位姿演示；可选外置 F/T / SpaceMouse | `SetFdCartesianAdmittanceWrenchSource` / `FdCartesianAdmittance` 的 `Enable`·`SetPoseTarget`·`Disable` | 默认无需外设；`ft-sensor` /  `spacemouse` 需 [smrcore_peripherals](https://github.com/smore-robotics/smrcore_peripherals)（外置力须先标定一次） | 先无外设体验 FDCC；需要时再接外置 F/T 或 SpaceMouse |
 
 ## 构建与运行
 
@@ -87,11 +87,11 @@ TCP 移动几厘米。
 ./scripts/download.sh
 ./scripts/build.sh
 
-./build/basics_connect [robot_ip]
-./build/basics_read_state [robot_ip]
+./build/basics_connect [--robot-ip <ip>]
+./build/basics_read_state [--robot-ip <ip>]
 ```
 
-本机仿真可省略 `robot_ip`。
+本机仿真可省略 `--robot-ip`。
 
 ## 运动与力控安全
 

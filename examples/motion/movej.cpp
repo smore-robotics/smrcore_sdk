@@ -1,6 +1,6 @@
 // motion/movej - joint-space motion with MoveJ
 //
-// Usage: ./motion_movej [robot_ip]
+// Usage: ./motion_movej [--robot-ip <ip>]
 //
 // Safety note: this example moves to a fixed conservative joint target.
 // Verify this target is safe for your robot before running.
@@ -16,7 +16,20 @@
 
 int main(int argc, char **argv)
 {
-    const std::string robot_ip = (argc > 1) ? argv[1] : "";
+    std::string robot_ip;
+    for (int i = 1; i < argc; ++i)
+    {
+        const std::string arg = argv[i];
+        if (arg == "--robot-ip" && i + 1 < argc)
+        {
+            robot_ip = argv[++i];
+        }
+        else
+        {
+            std::fprintf(stderr, "Usage: %s [--robot-ip <ip>]\n", argv[0]);
+            return 1;
+        }
+    }
 
     try
     {
@@ -49,6 +62,7 @@ int main(int argc, char **argv)
                          "SetVelocityPercentage(10%%) failed: code=%u msg=%s\n",
                          velocity_result.GetErrorCode(),
                          velocity_result.GetErrorMsg().c_str());
+            robot.Disable();
             robot.Shutdown();
             return 1;
         }
@@ -76,11 +90,13 @@ int main(int argc, char **argv)
         {
             std::fprintf(stderr, "MoveJ failed: code=%u msg=%s\n",
                          result.GetErrorCode(), result.GetErrorMsg().c_str());
+            robot.Disable();
             robot.Shutdown();
             return 1;
         }
         std::printf("MoveJ completed\n");
 
+        robot.Disable();
         robot.Shutdown();
         return 0;
     }

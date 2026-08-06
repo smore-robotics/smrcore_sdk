@@ -1,7 +1,7 @@
 // basics/error_recovery - recover from an emergency / safety stop:
 //   EStop -> Recover -> ClearError -> Enable, checking MotorStatus / ControlMode
 //
-// Usage: ./basics_error_recovery [robot_ip]
+// Usage: ./basics_error_recovery [--robot-ip <ip>]
 //
 // The full recovery chain has three distinct steps; none of them is optional
 // for a real e-stop, safety stop, or collision-detection trip:
@@ -41,7 +41,20 @@ void PrintMotorStatus(rcore::sdk::Robot &robot, const char *label)
 
 int main(int argc, char **argv)
 {
-    const std::string robot_ip = (argc > 1) ? argv[1] : "";
+    std::string robot_ip;
+    for (int i = 1; i < argc; ++i)
+    {
+        const std::string arg = argv[i];
+        if (arg == "--robot-ip" && i + 1 < argc)
+        {
+            robot_ip = argv[++i];
+        }
+        else
+        {
+            std::fprintf(stderr, "Usage: %s [--robot-ip <ip>]\n", argv[0]);
+            return 1;
+        }
+    }
 
     try
     {

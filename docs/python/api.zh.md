@@ -89,7 +89,7 @@ motor.enabled, motor.estop, motor.error, motor.operational
 
 ```python
 info = robot.GetRobotInfo()
-info["robot_model"], info["robot_serial_number"], info["sdk_version"]
+info["robot_model"], info["robot_body_serial_number"], info["sdk_version"]
 ```
 
 ## 位姿与关节数据
@@ -210,17 +210,31 @@ robot.EnableCartesianImpedance({"stiffness": [.. 6 ..], "damping": [.. 6 ..]})
 robot.SetCartesianImpedanceTarget(pose)   # 类 servo，需持续流式发送
 robot.DisableCartesianImpedance()
 
-# 力主导笛卡尔导纳：Enable 不接受参数；需先设置参数。
-robot.UpdateFdCartesianAdmittanceParams({"stiffness": [.. 6 ..], "kp": [.. 6 ..]})
-robot.EnableFdCartesianAdmittance()
+# 力主导笛卡尔导纳（FDCC）。
+# 默认力源为 joint_torque_estimated（无需外设）。
+# 必须在 Enable 之前设置力源。
+robot.SetFdCartesianAdmittanceWrenchSource(
+    FdCartesianAdmittanceWrenchSourceJointTorqueEstimated)  # 或 ...FtSensor
+robot.EnableFdCartesianAdmittance({"stiffness": [.. 6 ..], "kp": [.. 6 ..]})
 robot.SetFdCartesianAdmittancePoseTarget(pose)
+robot.SetFdCartesianAdmittanceTeleopSource(TeleopInputSourceSpaceMouse)  # 可选
 robot.DisableFdCartesianAdmittance()
 ```
 
-力/力矩传感器（力主导导纳所需）：`robot.EnsureFtSensor()`、
-`robot.GetFtCalibration()`、`robot.ReleaseFtSensor()`。
-`robot.CalibrateEndTorqueSensorZero()` 用于重新标定末端力矩传感器零点，
-执行时工具端应无外部负载。
+力源：
+
+- `FdCartesianAdmittanceWrenchSourceJointTorqueEstimated`（默认）——不需要外设
+  仓库；可选在无外载时调用 `robot.CalibrateEndTorqueSensorZero()`。
+- `FdCartesianAdmittanceWrenchSourceFtSensor`——**必须**先在
+  [smrcore_peripherals](https://github.com/smore-robotics/smrcore_peripherals)
+  完成一次标定并保存，再保持 bridge 推送采样。相关 API：
+  `robot.EnsureFtSensor()`、`robot.GetFtCalibration()`、
+  `robot.TareFtCalibration()`、`robot.ReleaseFtSensor()`。未标定禁止启用力源，
+  错误外力十分危险。
+
+SpaceMouse 遥操同样需要
+[smrcore_peripherals](https://github.com/smore-robotics/smrcore_peripherals)
+的 `app_peripherals_bridge` 注入采样。
 
 ## 末端功能板（End Board）
 

@@ -1,6 +1,6 @@
 // config/waypoints - add, list, and remove named waypoints
 //
-// Usage: ./config_waypoints [robot_ip]
+// Usage: ./config_waypoints [--robot-ip <ip>]
 //
 // Named waypoints let you store joint poses by name and replay them later with
 // MoveJ(name). This example saves the current pose under a namespaced demo name,
@@ -17,7 +17,20 @@
 
 int main(int argc, char **argv)
 {
-    const std::string robot_ip = (argc > 1) ? argv[1] : "";
+    std::string robot_ip;
+    for (int i = 1; i < argc; ++i)
+    {
+        const std::string arg = argv[i];
+        if (arg == "--robot-ip" && i + 1 < argc)
+        {
+            robot_ip = argv[++i];
+        }
+        else
+        {
+            std::fprintf(stderr, "Usage: %s [--robot-ip <ip>]\n", argv[0]);
+            return 1;
+        }
+    }
 
     try
     {

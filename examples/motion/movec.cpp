@@ -1,6 +1,6 @@
 // motion/movec - Cartesian circular motion with MoveC
 //
-// Usage: ./motion_movec [robot_ip]
+// Usage: ./motion_movec [--robot-ip <ip>]
 //
 // MoveC moves from the current TCP pose through a via pose to a goal pose. This
 // example builds a small arc near the current TCP by copying the current pose
@@ -18,7 +18,20 @@
 
 int main(int argc, char **argv)
 {
-    const std::string robot_ip = (argc > 1) ? argv[1] : "";
+    std::string robot_ip;
+    for (int i = 1; i < argc; ++i)
+    {
+        const std::string arg = argv[i];
+        if (arg == "--robot-ip" && i + 1 < argc)
+        {
+            robot_ip = argv[++i];
+        }
+        else
+        {
+            std::fprintf(stderr, "Usage: %s [--robot-ip <ip>]\n", argv[0]);
+            return 1;
+        }
+    }
 
     try
     {
@@ -49,6 +62,7 @@ int main(int argc, char **argv)
                          "code=%u msg=%s\n",
                          velocity_result.GetErrorCode(),
                          velocity_result.GetErrorMsg().c_str());
+            robot.Disable();
             robot.Shutdown();
             return 1;
         }
@@ -80,11 +94,13 @@ int main(int argc, char **argv)
         {
             std::fprintf(stderr, "MoveC failed: code=%u msg=%s\n",
                          result.GetErrorCode(), result.GetErrorMsg().c_str());
+            robot.Disable();
             robot.Shutdown();
             return 1;
         }
         std::printf("MoveC completed\n");
 
+        robot.Disable();
         robot.Shutdown();
         return 0;
     }

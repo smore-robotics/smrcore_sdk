@@ -1,6 +1,6 @@
 // config/payload - set, read, and clear the end-effector payload
 //
-// Usage: ./config_payload [robot_ip]
+// Usage: ./config_payload [--robot-ip <ip>]
 //
 // The payload (mass + center of mass on the flange frame) feeds the dynamics
 // model. It is process-state only: it affects the running controller and resets
@@ -23,7 +23,20 @@
 
 int main(int argc, char **argv)
 {
-    const std::string robot_ip = (argc > 1) ? argv[1] : "";
+    std::string robot_ip;
+    for (int i = 1; i < argc; ++i)
+    {
+        const std::string arg = argv[i];
+        if (arg == "--robot-ip" && i + 1 < argc)
+        {
+            robot_ip = argv[++i];
+        }
+        else
+        {
+            std::fprintf(stderr, "Usage: %s [--robot-ip <ip>]\n", argv[0]);
+            return 1;
+        }
+    }
 
     try
     {

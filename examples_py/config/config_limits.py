@@ -2,12 +2,13 @@
 """config/config_limits - read, modify, verify and restore motion limits.
 
 Usage:
-    python examples_py/config/config_limits.py [robot_ip]
+    python examples_py/config/config_limits.py [--robot-ip <ip>]
 
 Reads the current joint velocity limits, applies a small reduction, reads back
 to verify, then restores the originals before exiting.
 """
 
+import argparse
 import sys
 
 from rcore_sdk import Robot
@@ -25,7 +26,14 @@ def fmt(values):
 
 
 def main():
-    robot_ip = sys.argv[1] if len(sys.argv) > 1 else ""
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--robot-ip",
+        default="",
+        help="Robot IP (omit for local simulation)",
+    )
+    args = parser.parse_args()
+    robot_ip = args.robot_ip
 
     robot = Robot()
     if not robot.Initialize(robot_ip):
