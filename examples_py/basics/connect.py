@@ -2,19 +2,27 @@
 """basics/connect - connection lifecycle: Initialize / IsConnected / Shutdown.
 
 Usage:
-    python examples_py/basics/connect.py [robot_ip]
+    python examples_py/basics/connect.py [--robot-ip <ip>]
 
-    - Pass a robot IP, such as 192.168.1.100, to connect to a remote robot.
-    - Omit robot_ip for local simulation.
+    - Pass --robot-ip <ip>, such as 192.168.1.100, to connect to a remote robot.
+    - Omit --robot-ip for local simulation.
 """
 
+import argparse
 import sys
 
 from rcore_sdk import Robot
 
 
 def main():
-    robot_ip = sys.argv[1] if len(sys.argv) > 1 else ""
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--robot-ip",
+        default="",
+        help="Robot IP (omit for local simulation)",
+    )
+    args = parser.parse_args()
+    robot_ip = args.robot_ip
 
     robot = Robot()
     if not robot.Initialize(robot_ip):

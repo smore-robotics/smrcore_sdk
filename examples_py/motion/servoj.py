@@ -2,7 +2,7 @@
 """motion/servoj - 1 kHz joint servo streaming with ServoJ.
 
 Usage:
-    python examples_py/motion/servoj.py [robot_ip]
+    python examples_py/motion/servoj.py [--robot-ip <ip>]
 
 ServoJ streams a new joint target every control cycle (1 kHz). Unlike MoveJ
 there is no trajectory planner: you must send a smooth, continuous stream of
@@ -19,6 +19,7 @@ Safety note:
 """
 
 import math
+import argparse
 import sys
 import time
 
@@ -33,7 +34,14 @@ def check(result, label):
 
 
 def main():
-    robot_ip = sys.argv[1] if len(sys.argv) > 1 else ""
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--robot-ip",
+        default="",
+        help="Robot IP (omit for local simulation)",
+    )
+    args = parser.parse_args()
+    robot_ip = args.robot_ip
 
     robot = Robot()
     if not robot.Initialize(robot_ip):
@@ -73,8 +81,8 @@ def main():
                 time.sleep(delay)
 
         print("ServoJ streaming finished")
-        robot.Disable()
     finally:
+        robot.Disable()
         robot.Shutdown()
     return 0
 

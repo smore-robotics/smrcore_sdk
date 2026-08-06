@@ -2,7 +2,7 @@
 """config/waypoints - add, list, and remove named waypoints.
 
 Usage:
-    python examples_py/config/waypoints.py [robot_ip]
+    python examples_py/config/waypoints.py [--robot-ip <ip>]
 
 Named waypoints store joint poses by name for later replay. This example saves
 the current pose under a namespaced demo name, lists all waypoints, then removes
@@ -12,6 +12,7 @@ refuses to run so it never overwrites one of your own waypoints.
 Each waypoint is a dict: {"name": str, "joint_positions": [6 floats]}.
 """
 
+import argparse
 import sys
 
 from rcore_sdk import Robot
@@ -25,7 +26,14 @@ def check(result, label):
 
 
 def main():
-    robot_ip = sys.argv[1] if len(sys.argv) > 1 else ""
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--robot-ip",
+        default="",
+        help="Robot IP (omit for local simulation)",
+    )
+    args = parser.parse_args()
+    robot_ip = args.robot_ip
 
     robot = Robot()
     if not robot.Initialize(robot_ip):

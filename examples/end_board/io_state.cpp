@@ -1,8 +1,8 @@
 // end_board/io_state - read the end-board digital IO snapshot
 //
-// Usage: ./end_board_io_state [robot_ip]
-//   - Pass a robot IP, such as 192.168.1.100, for a remote robot.
-//   - Omit robot_ip when the end-board service is available locally.
+// Usage: ./end_board_io_state [--robot-ip <ip>]
+//   - Pass --robot-ip <ip>, such as 192.168.1.100, for a remote robot.
+//   - Omit --robot-ip when the end-board service is available locally.
 //
 // This example is read-only: it does not change digital outputs or command a
 // gripper. InitializeEndBoardOnly connects without waiting for robot motion
@@ -15,7 +15,20 @@
 
 int main(int argc, char **argv)
 {
-    const std::string robot_ip = (argc > 1) ? argv[1] : "";
+    std::string robot_ip;
+    for (int i = 1; i < argc; ++i)
+    {
+        const std::string arg = argv[i];
+        if (arg == "--robot-ip" && i + 1 < argc)
+        {
+            robot_ip = argv[++i];
+        }
+        else
+        {
+            std::fprintf(stderr, "Usage: %s [--robot-ip <ip>]\n", argv[0]);
+            return 1;
+        }
+    }
 
     rcore::sdk::Robot robot;
     if (!robot.InitializeEndBoardOnly(robot_ip))

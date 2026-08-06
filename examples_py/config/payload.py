@@ -2,7 +2,7 @@
 """config/payload - set, read, and restore the end-effector payload.
 
 Usage:
-    python examples_py/config/payload.py [robot_ip]
+    python examples_py/config/payload.py [--robot-ip <ip>]
 
 The payload (mass + center of mass on the flange frame) feeds the dynamics
 model. It is process-state only: it affects the running controller and resets to
@@ -19,6 +19,7 @@ Safety note:
     the real tool mass; clear it when no tool is mounted.
 """
 
+import argparse
 import sys
 
 from rcore_sdk import Robot
@@ -37,7 +38,14 @@ def describe(payload):
 
 
 def main():
-    robot_ip = sys.argv[1] if len(sys.argv) > 1 else ""
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--robot-ip",
+        default="",
+        help="Robot IP (omit for local simulation)",
+    )
+    args = parser.parse_args()
+    robot_ip = args.robot_ip
 
     robot = Robot()
     if not robot.Initialize(robot_ip):

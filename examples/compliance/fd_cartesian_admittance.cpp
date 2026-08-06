@@ -1,8 +1,8 @@
 // compliance/fd_cartesian_admittance - force-led Cartesian admittance (FDCC)
 //
 // Usage:
-//   ./compliance_fd_cartesian_admittance [robot_ip]
-//       [--wrench-source joint_torque_estimated|ft_sensor]
+//   ./compliance_fd_cartesian_admittance [--robot-ip <ip>]
+//       [--wrench-source joint_torque_estimated|ft-sensor]
 //       [--mode pose|spacemouse]
 //
 // FdCartesianAdmittance drives the TCP from an external wrench while tracking a
@@ -12,25 +12,25 @@
 //     Uses joint-torque estimates (no peripherals repository required).
 //     Recommended: CalibrateEndTorqueSensorZero once with no external load.
 //
-//   ft_sensor
+//   ft-sensor
 //     Uses an external six-axis F/T sensor. You MUST complete a one-time static
 //     calibration in smrcore_peripherals before enabling this source. Running
 //     FDCC on an uncalibrated external wrench is dangerous: wrong force/torque
 //     can cause large unintended motion.
 //
 //     One-time calibration (smrcore_peripherals, build with --with-sdk ON):
-//       app_peripherals_bridge --robot <ip> --ft-sensor
+//       app_peripherals_bridge --robot-ip <ip> --ft-sensor
 //       app_peripherals_ft_sensor_calib --robot-ip <ip> --save
 //     Daily use after calibration is saved:
-//       app_peripherals_bridge --robot <ip> --ft-sensor   # stream samples
-//       ./compliance_fd_cartesian_admittance <ip> --wrench-source ft_sensor
+//       app_peripherals_bridge --robot-ip <ip> --ft-sensor   # stream samples
+//       ./compliance_fd_cartesian_admittance --robot-ip <ip> --wrench-source ft-sensor
 //
 // Demo modes:
 //   pose (default)       Hold current TCP, command +5 cm along Z, then return.
 //   spacemouse           Teleop until Ctrl+C. SpaceMouse samples must be
 //                        injected by smrcore_peripherals (this example does not
 //                        open the device itself):
-//       app_peripherals_bridge --robot <ip> --spacemouse
+//       app_peripherals_bridge --robot-ip <ip> --spacemouse
 //       # or the default bridge (SpaceMouse + F/T together)
 //
 // Repositories:
@@ -77,10 +77,10 @@ void PrintUsage(const char *program)
 {
     std::fprintf(
         stderr,
-        "Usage: %s [robot_ip] [--wrench-source joint_torque_estimated|ft_sensor]\n"
+        "Usage: %s [--robot-ip <ip>] [--wrench-source joint_torque_estimated|ft-sensor]\n"
         "          [--mode pose|spacemouse]\n\n"
         "Defaults: joint_torque_estimated + pose (no peripherals required).\n"
-        "ft_sensor requires a saved calibration from smrcore_peripherals.\n"
+        "ft-sensor requires a saved calibration from smrcore_peripherals.\n"
         "spacemouse requires app_peripherals_bridge to inject samples.\n",
         program);
 }
@@ -94,7 +94,7 @@ bool ParseWrenchSource(const char *text,
         source = rcore::sdk::CartesianWrenchSource::JointTorqueEstimated;
         return true;
     }
-    if (value == "ft" || value == "ft_sensor")
+    if (value == "ft" || value == "ft-sensor" || value == "ft_sensor")
     {
         source = rcore::sdk::CartesianWrenchSource::FtSensor;
         return true;
@@ -105,7 +105,7 @@ bool ParseWrenchSource(const char *text,
 const char *WrenchSourceName(rcore::sdk::CartesianWrenchSource source)
 {
     return source == rcore::sdk::CartesianWrenchSource::FtSensor
-               ? "ft_sensor"
+               ? "ft-sensor"
                : "joint_torque_estimated";
 }
 
@@ -119,6 +119,16 @@ bool ParseArgs(int argc, char **argv, AppConfig &config)
             PrintUsage(argv[0]);
             std::exit(0);
         }
+        if (std::strcmp(arg, "--robot-ip") == 0)
+        {
+            if (i + 1 >= argc)
+            {
+                std::fprintf(stderr, "--robot-ip needs an IP address\n");
+                return false;
+            }
+            config.robot_ip = argv[++i];
+            continue;
+        }
         if (std::strcmp(arg, "--wrench-source") == 0)
         {
             if (i + 1 >= argc ||
@@ -126,7 +136,7 @@ bool ParseArgs(int argc, char **argv, AppConfig &config)
             {
                 std::fprintf(stderr,
                              "--wrench-source must be "
-                             "joint_torque_estimated or ft_sensor\n");
+                             "joint_torque_estimated or ft-sensor\n");
                 return false;
             }
             continue;
@@ -150,17 +160,8 @@ bool ParseArgs(int argc, char **argv, AppConfig &config)
             }
             continue;
         }
-        if (arg[0] == '-')
-        {
-            std::fprintf(stderr, "unknown argument: %s\n", arg);
-            return false;
-        }
-        if (!config.robot_ip.empty())
-        {
-            std::fprintf(stderr, "unexpected argument: %s\n", arg);
-            return false;
-        }
-        config.robot_ip = arg;
+        std::fprintf(stderr, "unknown argument: %s\n", arg);
+        return false;
     }
     return true;
 }
@@ -257,7 +258,7 @@ int main(int argc, char **argv)
                     "motion.\n"
                     "Calibrate once in smrcore_peripherals, then stream "
                     "samples:\n"
-                    "  app_peripherals_bridge --robot <ip> --ft-sensor\n"
+                    "  app_peripherals_bridge --robot-ip <ip> --ft-sensor\n"
                     "  app_peripherals_ft_sensor_calib --robot-ip <ip> --save\n"
                     "Repo: https://github.com/smore-robotics/smrcore_peripherals\n",
                     calib.status.error_code, calib.status.error_msg.c_str());
@@ -348,7 +349,7 @@ int main(int argc, char **argv)
                     "SetFdCartesianAdmittanceTeleopSource(SpaceMouse) failed: "
                     "code=%u msg=%s\n"
                     "Start smrcore_peripherals bridge first, e.g.\n"
-                    "  app_peripherals_bridge --robot <ip> --spacemouse\n",
+                    "  app_peripherals_bridge --robot-ip <ip> --spacemouse\n",
                     src.GetErrorCode(), src.GetErrorMsg().c_str());
                 cleanup();
                 return 1;

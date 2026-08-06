@@ -2,13 +2,14 @@
 """motion/movej - joint-space motion with MoveJ.
 
 Usage:
-    python examples_py/motion/movej.py [robot_ip]
+    python examples_py/motion/movej.py [--robot-ip <ip>]
 
 Safety note:
     This example moves to a fixed conservative joint target. Verify the target
     is safe for your robot before running.
 """
 
+import argparse
 import sys
 import time
 
@@ -23,7 +24,14 @@ def check(result, label):
 
 
 def main():
-    robot_ip = sys.argv[1] if len(sys.argv) > 1 else ""
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--robot-ip",
+        default="",
+        help="Robot IP (omit for local simulation)",
+    )
+    args = parser.parse_args()
+    robot_ip = args.robot_ip
 
     robot = Robot()
     if not robot.Initialize(robot_ip):
@@ -49,6 +57,7 @@ def main():
         check(robot.MoveJ(target, velocity_scale=0.5), "MoveJ")
         print("MoveJ completed")
     finally:
+        robot.Disable()
         robot.Shutdown()
     return 0
 

@@ -2,7 +2,7 @@
 """motion/kinematics - kinematics queries (no motion).
 
 Usage:
-    python examples_py/motion/kinematics.py [robot_ip]
+    python examples_py/motion/kinematics.py [--robot-ip <ip>]
 
 ForwardKinematics maps joint positions to a TCP pose; InverseKinematics maps a
 TCP pose back to joint positions. Both return a (Result, value) tuple.
@@ -13,6 +13,7 @@ Safety note:
     This example only computes kinematics; it does not command any motion.
 """
 
+import argparse
 import sys
 
 from rcore_sdk import Pose, Robot
@@ -26,7 +27,14 @@ def check(result, label):
 
 
 def main():
-    robot_ip = sys.argv[1] if len(sys.argv) > 1 else ""
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--robot-ip",
+        default="",
+        help="Robot IP (omit for local simulation)",
+    )
+    args = parser.parse_args()
+    robot_ip = args.robot_ip
 
     robot = Robot()
     if not robot.Initialize(robot_ip):

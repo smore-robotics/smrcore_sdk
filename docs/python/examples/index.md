@@ -4,7 +4,7 @@ Python examples are grouped by topic under `examples_py/`, mirroring the C++
 `examples/` layout. Run any example with:
 
 ```bash
-python examples_py/basics/connect.py [robot_ip]
+python examples_py/basics/connect.py [--robot-ip <ip>]
 ```
 
 Omit `robot_ip` to run against the local simulator.
@@ -92,7 +92,7 @@ See the full source walkthrough: [Compliance Examples](compliance.md)
 | Source | Shows | Main APIs | Prerequisites | When to use |
 |---|---|---|---|---|
 | `compliance/cartesian_impedance.py` | Cartesian impedance; equilibrium streamed +5 cm in Z and back | `EnableCartesianImpedance` / `SetCartesianImpedanceTarget` / `DisableCartesianImpedance` | — | Try conservative Cartesian impedance behaviour |
-| `compliance/fd_cartesian_admittance.py` | Force-led Cartesian admittance (FDCC); default joint-torque wrench + pose demo; optional external F/T / SpaceMouse | `SetFdCartesianAdmittanceWrenchSource` / `EnableFdCartesianAdmittance` | default: none; `ft_sensor` / `spacemouse`: [smrcore_peripherals](https://github.com/smore-robotics/smrcore_peripherals) (calib once for F/T) | Try FDCC without peripherals first; add external F/T or SpaceMouse when needed |
+| `compliance/fd_cartesian_admittance.py` | Force-led Cartesian admittance (FDCC); default joint-torque wrench + pose demo; optional external F/T / SpaceMouse | `SetFdCartesianAdmittanceWrenchSource` / `EnableFdCartesianAdmittance` | default: none; `ft-sensor` /  `spacemouse`: [smrcore_peripherals](https://github.com/smore-robotics/smrcore_peripherals) (calib once for F/T) | Try FDCC without peripherals first; add external F/T or SpaceMouse when needed |
 
 ## Safety
 

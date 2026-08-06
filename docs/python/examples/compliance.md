@@ -41,7 +41,7 @@ Force-led Cartesian admittance (FDCC). Defaults:
 
 Advanced:
 
-- `--wrench-source ft_sensor`: **must** calibrate once in
+- `--wrench-source ft-sensor`: **must** calibrate once in
   [smrcore_peripherals](https://github.com/smore-robotics/smrcore_peripherals)
   (`app_peripherals_ft_sensor_calib --save`), then keep
   `app_peripherals_bridge --ft-sensor` streaming samples. Uncalibrated external

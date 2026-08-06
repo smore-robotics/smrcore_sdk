@@ -43,7 +43,7 @@ cd smrcore_sdk
 ./scripts/download.sh            # fetch the latest prebuilt C++ SDK
 ./scripts/build.sh               # build the C++ examples
 
-./build/basics_connect [robot_ip] # omit robot_ip for local simulation
+./build/basics_connect [--robot-ip <ip>] # omit --robot-ip for local simulation
 ```
 
 ### Python
@@ -54,7 +54,7 @@ PY_TAG=cp310-cp310-linux_x86_64   # Windows: cp310-cp310-win_amd64
 curl -L -O "https://github.com/smore-robotics/smrcore_sdk/releases/download/v${VERSION}/rcore_sdk_py-${VERSION}-${PY_TAG}.whl"
 python3 -m pip install "./rcore_sdk_py-${VERSION}-${PY_TAG}.whl"
 
-python3 examples_py/basics/connect.py [robot_ip] # omit robot_ip for local simulation
+python3 examples_py/basics/connect.py [--robot-ip <ip>] # omit --robot-ip for local simulation
 ```
 
 More setup and examples are on the

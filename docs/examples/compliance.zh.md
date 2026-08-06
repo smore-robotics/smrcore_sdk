@@ -34,21 +34,21 @@
 | 路径 | 用法 | 是否需要 [smrcore_peripherals](https://github.com/smore-robotics/smrcore_peripherals) |
 |---|---|---|
 | 基础（默认） | `--wrench-source joint_torque_estimated`（默认）+ `--mode pose` | 否 |
-| 外置六维力 | 先一次性标定 `--save`，再 bridge `--ft-sensor`，再 `--wrench-source ft_sensor` | 是 |
+| 外置六维力 | 先一次性标定 `--save`，再 bridge `--ft-sensor`，再 `--wrench-source ft-sensor` | 是 |
 | SpaceMouse 遥操 | bridge `--spacemouse`（或默认双外设），再 `--mode spacemouse` | 是 |
 
-**外置力传感器安全要求：** 使用 `--wrench-source ft_sensor` 前 **必须** 在
+**外置力传感器安全要求：** 使用 `--wrench-source ft-sensor` 前 **必须** 在
 `smrcore_peripherals` 完成一次静态标定并 `--save`。未标定的外力十分危险，可导致
 大幅非预期运动。标定保存后，日常只需保持 bridge 推送采样，再运行本示例。
 
 ```bash
 # 一次性标定
-app_peripherals_bridge --robot <ip> --ft-sensor
+app_peripherals_bridge --robot-ip <ip> --ft-sensor
 app_peripherals_ft_sensor_calib --robot-ip <ip> --save
 
 # 日常：推送采样后跑 FDCC
-app_peripherals_bridge --robot <ip> --ft-sensor
-./build/compliance_fd_cartesian_admittance <ip> --wrench-source ft_sensor
+app_peripherals_bridge --robot-ip <ip> --ft-sensor
+./build/compliance_fd_cartesian_admittance --robot-ip <ip> --wrench-source ft-sensor
 ```
 
 刚度 / kp 为源码中的保守常量，请直接改源码调参（无增益 CLI）。

@@ -36,23 +36,23 @@ Optional advanced paths:
 | Path | How | Requires [smrcore_peripherals](https://github.com/smore-robotics/smrcore_peripherals)? |
 |---|---|---|
 | Basic (default) | `--wrench-source joint_torque_estimated` (default) + `--mode pose` | No |
-| External F/T | One-time calib `--save`, then bridge `--ft-sensor`, then `--wrench-source ft_sensor` | Yes |
+| External F/T | One-time calib `--save`, then bridge `--ft-sensor`, then `--wrench-source ft-sensor` | Yes |
 | SpaceMouse teleop | Bridge `--spacemouse` (or default dual peripherals), then `--mode spacemouse` | Yes |
 
 **External F/T safety:** you **must** complete a one-time static calibration in
-`smrcore_peripherals` before using `--wrench-source ft_sensor`. An uncalibrated
+`smrcore_peripherals` before using `--wrench-source ft-sensor`. An uncalibrated
 external wrench is dangerous and can cause large unintended motion. After
 `--save`, keep the bridge running to stream samples into the controller, then
 start this example.
 
 ```bash
 # One-time calibration
-app_peripherals_bridge --robot <ip> --ft-sensor
+app_peripherals_bridge --robot-ip <ip> --ft-sensor
 app_peripherals_ft_sensor_calib --robot-ip <ip> --save
 
 # Daily: stream samples, then run FDCC
-app_peripherals_bridge --robot <ip> --ft-sensor
-./build/compliance_fd_cartesian_admittance <ip> --wrench-source ft_sensor
+app_peripherals_bridge --robot-ip <ip> --ft-sensor
+./build/compliance_fd_cartesian_admittance --robot-ip <ip> --wrench-source ft-sensor
 ```
 
 Stiffness / kp are conservative constants in the source file — edit them there

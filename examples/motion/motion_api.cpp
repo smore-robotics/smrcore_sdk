@@ -1,6 +1,6 @@
 // motion/motion_api - use the Motion domain handle (robot.Motion())
 //
-// Usage: ./motion_motion_api [robot_ip]
+// Usage: ./motion_motion_api [--robot-ip <ip>]
 //
 // The curated shortcuts (robot.MoveJ/MoveL/...) cover the common cases, but the
 // full motion capability lives on the Motion domain handle. This example shows
@@ -20,7 +20,20 @@
 
 int main(int argc, char **argv)
 {
-    const std::string robot_ip = (argc > 1) ? argv[1] : "";
+    std::string robot_ip;
+    for (int i = 1; i < argc; ++i)
+    {
+        const std::string arg = argv[i];
+        if (arg == "--robot-ip" && i + 1 < argc)
+        {
+            robot_ip = argv[++i];
+        }
+        else
+        {
+            std::fprintf(stderr, "Usage: %s [--robot-ip <ip>]\n", argv[0]);
+            return 1;
+        }
+    }
 
     try
     {
@@ -51,6 +64,7 @@ int main(int argc, char **argv)
                          "code=%u msg=%s\n",
                          velocity_result.GetErrorCode(),
                          velocity_result.GetErrorMsg().c_str());
+            robot.Disable();
             robot.Shutdown();
             return 1;
         }
@@ -148,6 +162,7 @@ int main(int argc, char **argv)
         }
         std::printf("MoveP completed\n");
 
+        robot.Disable();
         robot.Shutdown();
         return 0;
     }

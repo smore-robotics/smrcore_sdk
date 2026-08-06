@@ -3,7 +3,7 @@
 ## Before Running
 
 Basics examples do not move the robot and can run against the local simulator
-(omit `robot_ip`). The comment header in each source file is the full guide.
+(omit `--robot-ip`). The comment header in each source file is the full guide.
 
 ## connect
 

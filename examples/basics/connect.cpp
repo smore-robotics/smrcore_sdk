@@ -1,8 +1,8 @@
 // basics/connect - connection lifecycle: Initialize / IsConnected / Shutdown
 //
-// Usage: ./basics_connect [robot_ip]
-//   - Pass a robot IP, such as 192.168.1.100, to connect to a remote robot.
-//   - Omit robot_ip for local simulation.
+// Usage: ./basics_connect [--robot-ip <ip>]
+//   - Pass --robot-ip <ip>, such as 192.168.1.100, to connect to a remote robot.
+//   - Omit --robot-ip for local simulation.
 
 #include "sdk/robot.hpp"
 
@@ -11,7 +11,20 @@
 
 int main(int argc, char **argv)
 {
-    const std::string robot_ip = (argc > 1) ? argv[1] : "";
+    std::string robot_ip;
+    for (int i = 1; i < argc; ++i)
+    {
+        const std::string arg = argv[i];
+        if (arg == "--robot-ip" && i + 1 < argc)
+        {
+            robot_ip = argv[++i];
+        }
+        else
+        {
+            std::fprintf(stderr, "Usage: %s [--robot-ip <ip>]\n", argv[0]);
+            return 1;
+        }
+    }
 
     rcore::sdk::Robot robot;
     if (!robot.Initialize(robot_ip))

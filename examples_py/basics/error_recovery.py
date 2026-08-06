@@ -2,7 +2,7 @@
 """basics/error_recovery - recover from an emergency / safety stop.
 
 Usage:
-    python examples_py/basics/error_recovery.py [robot_ip]
+    python examples_py/basics/error_recovery.py [--robot-ip <ip>]
 
 The full recovery chain has three distinct steps; none is optional for a real
 e-stop, safety stop, or collision-detection trip:
@@ -16,6 +16,7 @@ Safety note:
     motors. Keep the workspace clear and the physical e-stop reachable.
 """
 
+import argparse
 import sys
 import time
 
@@ -38,7 +39,14 @@ def print_motor_status(robot, label):
 
 
 def main():
-    robot_ip = sys.argv[1] if len(sys.argv) > 1 else ""
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--robot-ip",
+        default="",
+        help="Robot IP (omit for local simulation)",
+    )
+    args = parser.parse_args()
+    robot_ip = args.robot_ip
 
     robot = Robot()
     if not robot.Initialize(robot_ip):
@@ -77,9 +85,8 @@ def main():
 
         print(f"\nControl mode: {robot.GetControlMode()} (0 = Kinematics)")
         print("Recovery sequence completed")
-
-        robot.Disable()
     finally:
+        robot.Disable()
         robot.Shutdown()
     return 0
 

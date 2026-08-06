@@ -4,10 +4,10 @@ Python 示例按主题分组放在 `examples_py/` 下，与 C++ 的 `examples/` 
 运行任意示例：
 
 ```bash
-python examples_py/basics/connect.py [robot_ip]
+python examples_py/basics/connect.py [--robot-ip <ip>]
 ```
 
-省略 `robot_ip` 即可连接本机仿真器。
+省略 `--robot-ip` 即可连接本机仿真器。
 
 每个示例源文件顶部的 docstring 才是完整参考（用法、行为、安全提示）。下表按示例
 概括它展示什么、主要 API、前置条件与适用场景。
@@ -86,7 +86,7 @@ TCP 移动几厘米。
 | 源文件 | 作用 | 主要 API | 前置条件 | 适用场景 |
 |---|---|---|---|---|
 | `compliance/cartesian_impedance.py` | 笛卡尔阻抗；平衡点流式沿 Z +5cm 往返 | `EnableCartesianImpedance` / `SetCartesianImpedanceTarget` / `DisableCartesianImpedance` | — | 体验保守参数下的笛卡尔阻抗行为 |
-| `compliance/fd_cartesian_admittance.py` | 力主导笛卡尔导纳（FDCC）；默认关节力矩力源 + 位姿演示；可选外置 F/T / SpaceMouse | `SetFdCartesianAdmittanceWrenchSource` / `EnableFdCartesianAdmittance` | 默认无需外设；`ft_sensor` / `spacemouse` 需 [smrcore_peripherals](https://github.com/smore-robotics/smrcore_peripherals)（外置力须先标定一次） | 先无外设体验 FDCC；需要时再接外置 F/T 或 SpaceMouse |
+| `compliance/fd_cartesian_admittance.py` | 力主导笛卡尔导纳（FDCC）；默认关节力矩力源 + 位姿演示；可选外置 F/T / SpaceMouse | `SetFdCartesianAdmittanceWrenchSource` / `EnableFdCartesianAdmittance` | 默认无需外设；`ft-sensor` /  `spacemouse` 需 [smrcore_peripherals](https://github.com/smore-robotics/smrcore_peripherals)（外置力须先标定一次） | 先无外设体验 FDCC；需要时再接外置 F/T 或 SpaceMouse |
 
 ## 安全
 

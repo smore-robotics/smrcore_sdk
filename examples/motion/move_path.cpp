@@ -1,6 +1,6 @@
 // motion/move_path - blended Cartesian path with MovePath
 //
-// Usage: ./motion_move_path [robot_ip]
+// Usage: ./motion_move_path [--robot-ip <ip>]
 //
 // MovePath runs a sequence of Cartesian waypoints in one motion. Each waypoint
 // is either a Stop point (the TCP comes to rest) or a Blend point (the path is
@@ -20,7 +20,20 @@
 
 int main(int argc, char **argv)
 {
-    const std::string robot_ip = (argc > 1) ? argv[1] : "";
+    std::string robot_ip;
+    for (int i = 1; i < argc; ++i)
+    {
+        const std::string arg = argv[i];
+        if (arg == "--robot-ip" && i + 1 < argc)
+        {
+            robot_ip = argv[++i];
+        }
+        else
+        {
+            std::fprintf(stderr, "Usage: %s [--robot-ip <ip>]\n", argv[0]);
+            return 1;
+        }
+    }
 
     try
     {
@@ -51,6 +64,7 @@ int main(int argc, char **argv)
                          "code=%u msg=%s\n",
                          velocity_result.GetErrorCode(),
                          velocity_result.GetErrorMsg().c_str());
+            robot.Disable();
             robot.Shutdown();
             return 1;
         }
@@ -100,11 +114,13 @@ int main(int argc, char **argv)
         {
             std::fprintf(stderr, "MovePath failed: code=%u msg=%s\n",
                          result.GetErrorCode(), result.GetErrorMsg().c_str());
+            robot.Disable();
             robot.Shutdown();
             return 1;
         }
         std::printf("MovePath completed\n");
 
+        robot.Disable();
         robot.Shutdown();
         return 0;
     }

@@ -2,8 +2,8 @@
 """compliance/fd_cartesian_admittance - force-led Cartesian admittance (FDCC).
 
 Usage:
-    python examples_py/compliance/fd_cartesian_admittance.py [robot_ip]
-        [--wrench-source joint_torque_estimated|ft_sensor]
+    python examples_py/compliance/fd_cartesian_admittance.py [--robot-ip <ip>]
+        [--wrench-source joint_torque_estimated|ft-sensor]
         [--mode pose|spacemouse]
 
 FdCartesianAdmittance drives the TCP from an external wrench while tracking a
@@ -13,24 +13,24 @@ pose target. Two wrench sources are supported:
     Uses joint-torque estimates (no peripherals repository required).
     Recommended: CalibrateEndTorqueSensorZero once with no external load.
 
-  ft_sensor
+  ft-sensor
     Uses an external six-axis F/T sensor. You MUST complete a one-time static
     calibration in smrcore_peripherals before enabling this source. Running
     FDCC on an uncalibrated external wrench is dangerous: wrong force/torque
     can cause large unintended motion.
 
     One-time calibration (smrcore_peripherals, build with --with-sdk ON):
-      app_peripherals_bridge --robot <ip> --ft-sensor
+      app_peripherals_bridge --robot-ip <ip> --ft-sensor
       app_peripherals_ft_sensor_calib --robot-ip <ip> --save
     Daily use after calibration is saved:
-      app_peripherals_bridge --robot <ip> --ft-sensor
-      python .../fd_cartesian_admittance.py <ip> --wrench-source ft_sensor
+      app_peripherals_bridge --robot-ip <ip> --ft-sensor
+      python .../fd_cartesian_admittance.py --robot-ip <ip> --wrench-source ft-sensor
 
 Demo modes:
   pose (default)  Hold current TCP, command +5 cm along Z, then return.
   spacemouse      Teleop until Ctrl+C. SpaceMouse samples must be injected by
                   smrcore_peripherals (this script does not open the device):
-      app_peripherals_bridge --robot <ip> --spacemouse
+      app_peripherals_bridge --robot-ip <ip> --spacemouse
 
 Repositories:
   https://github.com/smore-robotics/smrcore_sdk
@@ -77,12 +77,12 @@ def parse_args(argv):
     parser = argparse.ArgumentParser(
         description="Force-led Cartesian admittance (FDCC) example"
     )
-    parser.add_argument("robot_ip", nargs="?", default="", help="Robot IP")
+    parser.add_argument("--robot-ip", default="", help="Robot IP (omit for local)")
     parser.add_argument(
         "--wrench-source",
-        choices=("joint_torque_estimated", "ft_sensor"),
+        choices=("joint_torque_estimated", "ft-sensor", "ft_sensor"),
         default="joint_torque_estimated",
-        help="Wrench input source (default: joint_torque_estimated)",
+        help="Wrench input source (default: joint_torque_estimated; use ft-sensor for external F/T)",
     )
     parser.add_argument(
         "--mode",
@@ -98,7 +98,7 @@ def main(argv=None):
     signal.signal(signal.SIGINT, _on_signal)
     signal.signal(signal.SIGTERM, _on_signal)
 
-    use_ft = args.wrench_source == "ft_sensor"
+    use_ft = args.wrench_source in ("ft-sensor", "ft_sensor")
     wrench_source = (
         FdCartesianAdmittanceWrenchSourceFtSensor
         if use_ft
@@ -134,7 +134,7 @@ def main(argv=None):
                     "motion.\n"
                     "Calibrate once in smrcore_peripherals, then stream "
                     "samples:\n"
-                    "  app_peripherals_bridge --robot <ip> --ft-sensor\n"
+                    "  app_peripherals_bridge --robot-ip <ip> --ft-sensor\n"
                     "  app_peripherals_ft_sensor_calib --robot-ip <ip> --save\n"
                     "Repo: https://github.com/smore-robotics/smrcore_peripherals",
                     file=sys.stderr,
@@ -189,7 +189,7 @@ def main(argv=None):
                     "SetFdCartesianAdmittanceTeleopSource(SpaceMouse) failed: "
                     f"code={src.error_code} msg={src.error_msg}. "
                     "Start smrcore_peripherals bridge first, e.g. "
-                    "app_peripherals_bridge --robot <ip> --spacemouse"
+                    "app_peripherals_bridge --robot-ip <ip> --spacemouse"
                 )
             spacemouse_on = True
             print(
@@ -243,7 +243,8 @@ def main(argv=None):
             )
         if ft_on:
             robot.ReleaseFtSensor()
-        robot.Disable()
+        disabled = robot.Disable()
+        print(f"Disable: {'ok' if disabled else 'failed'}")
         robot.Shutdown()
     return 0
 

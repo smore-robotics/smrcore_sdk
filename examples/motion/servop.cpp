@@ -1,6 +1,6 @@
 // motion/servop - 1 kHz Cartesian servo streaming with ServoP
 //
-// Usage: ./motion_servop [robot_ip]
+// Usage: ./motion_servop [--robot-ip <ip>]
 //
 // ServoP is the Cartesian-space counterpart of ServoJ: it streams a new TCP
 // pose target every control cycle (1 kHz) with no trajectory planner. You are
@@ -23,7 +23,20 @@
 
 int main(int argc, char **argv)
 {
-    const std::string robot_ip = (argc > 1) ? argv[1] : "";
+    std::string robot_ip;
+    for (int i = 1; i < argc; ++i)
+    {
+        const std::string arg = argv[i];
+        if (arg == "--robot-ip" && i + 1 < argc)
+        {
+            robot_ip = argv[++i];
+        }
+        else
+        {
+            std::fprintf(stderr, "Usage: %s [--robot-ip <ip>]\n", argv[0]);
+            return 1;
+        }
+    }
 
     try
     {
@@ -54,6 +67,7 @@ int main(int argc, char **argv)
                          "code=%u msg=%s\n",
                          velocity_result.GetErrorCode(),
                          velocity_result.GetErrorMsg().c_str());
+            robot.Disable();
             robot.Shutdown();
             return 1;
         }

@@ -2,7 +2,7 @@
 """motion/movec - Cartesian circular motion with MoveC.
 
 Usage:
-    python examples_py/motion/movec.py [robot_ip]
+    python examples_py/motion/movec.py [--robot-ip <ip>]
 
 MoveC moves from the current TCP pose through a via pose to a goal pose. This
 example builds a small arc near the current TCP by shifting only the position.
@@ -11,6 +11,7 @@ Safety note:
     Verify the via and goal poses are safe before running.
 """
 
+import argparse
 import sys
 import time
 
@@ -34,7 +35,14 @@ def offset_pose(pose, dx=0.0, dy=0.0, dz=0.0):
 
 
 def main():
-    robot_ip = sys.argv[1] if len(sys.argv) > 1 else ""
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--robot-ip",
+        default="",
+        help="Robot IP (omit for local simulation)",
+    )
+    args = parser.parse_args()
+    robot_ip = args.robot_ip
 
     robot = Robot()
     if not robot.Initialize(robot_ip):
@@ -59,6 +67,7 @@ def main():
         check(robot.MoveC(via, goal), "MoveC")
         print("MoveC completed")
     finally:
+        robot.Disable()
         robot.Shutdown()
     return 0
 

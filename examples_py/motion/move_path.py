@@ -2,7 +2,7 @@
 """motion/move_path - blended Cartesian path with MovePath.
 
 Usage:
-    python examples_py/motion/move_path.py [robot_ip]
+    python examples_py/motion/move_path.py [--robot-ip <ip>]
 
 MovePath runs a sequence of Cartesian waypoints in one motion. Each waypoint is
 a dict with:
@@ -15,6 +15,7 @@ Safety note:
     the workspace is clear before running.
 """
 
+import argparse
 import sys
 import time
 
@@ -36,7 +37,14 @@ def offset_pose(pose, dx=0.0, dy=0.0):
 
 
 def main():
-    robot_ip = sys.argv[1] if len(sys.argv) > 1 else ""
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--robot-ip",
+        default="",
+        help="Robot IP (omit for local simulation)",
+    )
+    args = parser.parse_args()
+    robot_ip = args.robot_ip
 
     robot = Robot()
     if not robot.Initialize(robot_ip):
@@ -74,6 +82,7 @@ def main():
         check(robot.MovePath(waypoints), "MovePath")
         print("MovePath completed")
     finally:
+        robot.Disable()
         robot.Shutdown()
     return 0
 

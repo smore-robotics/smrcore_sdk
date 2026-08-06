@@ -1,6 +1,6 @@
 // motion/servoj - 1 kHz joint servo streaming with ServoJ
 //
-// Usage: ./motion_servoj [robot_ip]
+// Usage: ./motion_servoj [--robot-ip <ip>]
 //
 // ServoJ streams a new joint target every control cycle (1 kHz). Unlike MoveJ
 // there is no trajectory planner: you are responsible for sending a smooth,
@@ -22,7 +22,20 @@
 
 int main(int argc, char **argv)
 {
-    const std::string robot_ip = (argc > 1) ? argv[1] : "";
+    std::string robot_ip;
+    for (int i = 1; i < argc; ++i)
+    {
+        const std::string arg = argv[i];
+        if (arg == "--robot-ip" && i + 1 < argc)
+        {
+            robot_ip = argv[++i];
+        }
+        else
+        {
+            std::fprintf(stderr, "Usage: %s [--robot-ip <ip>]\n", argv[0]);
+            return 1;
+        }
+    }
 
     try
     {
@@ -54,6 +67,7 @@ int main(int argc, char **argv)
                          "SetVelocityPercentage(10%%) failed: code=%u msg=%s\n",
                          velocity_result.GetErrorCode(),
                          velocity_result.GetErrorMsg().c_str());
+            robot.Disable();
             robot.Shutdown();
             return 1;
         }
@@ -68,6 +82,7 @@ int main(int argc, char **argv)
             std::fprintf(stderr, "MoveJ home failed: code=%u msg=%s\n",
                          move_result.GetErrorCode(),
                          move_result.GetErrorMsg().c_str());
+            robot.Disable();
             robot.Shutdown();
             return 1;
         }

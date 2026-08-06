@@ -38,7 +38,7 @@
 
 进阶：
 
-- `--wrench-source ft_sensor`：**必须**先在
+- `--wrench-source ft-sensor`：**必须**先在
   [smrcore_peripherals](https://github.com/smore-robotics/smrcore_peripherals)
   完成一次标定（`app_peripherals_ft_sensor_calib --save`），再保持
   `app_peripherals_bridge --ft-sensor` 推送采样。未标定外力十分危险。

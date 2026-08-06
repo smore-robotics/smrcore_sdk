@@ -2,7 +2,7 @@
 """motion/async_motion - asynchronous motion with pause / continue / status.
 
 Usage:
-    python examples_py/motion/async_motion.py [robot_ip]
+    python examples_py/motion/async_motion.py [--robot-ip <ip>]
 
 An asynchronous Move returns an AsyncResult immediately. While it runs you can
 poll the task status and pause / continue / stop the motion.
@@ -12,6 +12,7 @@ Safety note:
     is safe for your robot before running.
 """
 
+import argparse
 import sys
 import time
 
@@ -30,7 +31,14 @@ STATUS_NAMES = {0: "Pending", 1: "Running", 2: "Paused", 3: "Succeeded",
 
 
 def main():
-    robot_ip = sys.argv[1] if len(sys.argv) > 1 else ""
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--robot-ip",
+        default="",
+        help="Robot IP (omit for local simulation)",
+    )
+    args = parser.parse_args()
+    robot_ip = args.robot_ip
 
     robot = Robot()
     if not robot.Initialize(robot_ip):
@@ -76,6 +84,7 @@ def main():
         check(ar.Wait(), "MoveJ")
         print("Async MoveJ completed")
     finally:
+        robot.Disable()
         robot.Shutdown()
     return 0
 

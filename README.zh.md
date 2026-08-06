@@ -41,7 +41,7 @@ cd smrcore_sdk
 ./scripts/download.sh            # 下载最新预编译 C++ SDK
 ./scripts/build.sh               # 构建 C++ 示例
 
-./build/basics_connect [robot_ip] # 省略 robot_ip 即为本机仿真
+./build/basics_connect [--robot-ip <ip>] # 省略 --robot-ip 即为本机仿真
 ```
 
 ### Python
@@ -52,7 +52,7 @@ PY_TAG=cp310-cp310-linux_x86_64   # Windows: cp310-cp310-win_amd64
 curl -L -O "https://github.com/smore-robotics/smrcore_sdk/releases/download/v${VERSION}/rcore_sdk_py-${VERSION}-${PY_TAG}.whl"
 python3 -m pip install "./rcore_sdk_py-${VERSION}-${PY_TAG}.whl"
 
-python3 examples_py/basics/connect.py [robot_ip] # 省略 robot_ip 即为本机仿真
+python3 examples_py/basics/connect.py [--robot-ip <ip>] # 省略 --robot-ip 即为本机仿真
 ```
 
 更多配置与示例详见

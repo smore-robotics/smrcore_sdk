@@ -2,7 +2,7 @@
 """compliance/cartesian_impedance - Cartesian impedance control.
 
 Usage:
-    python examples_py/compliance/cartesian_impedance.py [robot_ip]
+    python examples_py/compliance/cartesian_impedance.py [--robot-ip <ip>]
 
 Cartesian impedance is torque-controlled: the TCP behaves like a spring-damper
 around an equilibrium pose. SetCartesianImpedanceTarget is a servo-like (~1 kHz)
@@ -20,6 +20,7 @@ Safety note:
     for a brand-new hardware bring-up.
 """
 
+import argparse
 import sys
 import time
 
@@ -34,7 +35,14 @@ def check(result, label):
 
 
 def main():
-    robot_ip = sys.argv[1] if len(sys.argv) > 1 else ""
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--robot-ip",
+        default="",
+        help="Robot IP (omit for local simulation)",
+    )
+    args = parser.parse_args()
+    robot_ip = args.robot_ip
 
     robot = Robot()
     if not robot.Initialize(robot_ip):
@@ -81,7 +89,7 @@ def main():
         if impedance_on:
             disabled = robot.DisableCartesianImpedance()
             print(f"DisableCartesianImpedance: {'ok' if disabled else 'failed'}")
-            robot.Disable()
+        robot.Disable()
         robot.Shutdown()
     return 0
 
