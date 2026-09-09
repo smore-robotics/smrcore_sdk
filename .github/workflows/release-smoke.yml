@@ -56,6 +56,16 @@ jobs:
           ldd build/motion_movej | grep librcoresdk
           ldd build/motion_movel | grep librcoresdk
 
+      # The simulator suite also runs Python examples. The Python matrix below
+      # validates every wheel; install cp310 here solely for simulator coverage.
+      - name: Install Python wheel for simulator tests
+        run: |
+          asset="rcore_sdk_py-${VERSION}-cp310-cp310-linux_x86_64.whl"
+          curl -L --fail --show-error \
+            "https://github.com/smore-robotics/smrcore_sdk/releases/download/v${VERSION}/${asset}" \
+            -o "${asset}"
+          python3 -m pip install "./${asset}"
+
       # SDK <-> simulator pairing test: run the stable example subset against
       # the released simulator. Unlike PR CI, this is a hard requirement for
       # official releases - missing asset or VERSION mismatch fails the smoke.
