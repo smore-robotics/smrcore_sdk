@@ -56,33 +56,6 @@ jobs:
           ldd build/motion_movej | grep librcoresdk
           ldd build/motion_movel | grep librcoresdk
 
-      - name: Download Python wheel
-        run: |
-          PY_TAG=cp310-cp310-linux_x86_64
-          curl -L --fail --show-error \
-            "https://github.com/smore-robotics/smrcore_sdk/releases/download/v${VERSION}/rcore_sdk_py-${VERSION}-${PY_TAG}.whl" \
-            -o "rcore_sdk_py-${VERSION}-${PY_TAG}.whl"
-
-      - name: Install and verify Python wheel
-        run: |
-          python3 -m pip install "./rcore_sdk_py-${VERSION}-cp310-cp310-linux_x86_64.whl"
-          python3 - <<'PY'
-          import os
-          import rcore_sdk
-          from rcore_sdk import _native
-
-          version = os.environ["VERSION"]
-          info = _native.linked_sdk()
-          print(info)
-
-          assert rcore_sdk.__version__ == version
-          assert info["linked"] is True
-          assert info["version"] == version
-          PY
-
-      - name: Check Python examples
-        run: ./scripts/check_python_examples.sh
-
       # SDK <-> simulator pairing test: run the stable example subset against
       # the released simulator. Unlike PR CI, this is a hard requirement for
       # official releases - missing asset or VERSION mismatch fails the smoke.
@@ -108,11 +81,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.10"
 
       - name: Resolve version
         shell: pwsh
@@ -159,18 +127,102 @@ jobs:
             }
           }
 
-      - name: Download Python wheel
+  linux-python-wheel-smoke:
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Resolve version
+        run: |
+          version="${{ github.event.inputs.version }}"
+          version="${version#v}"
+          echo "VERSION=$version" >> "$GITHUB_ENV"
+
+      - name: Checkout release tag
+        run: |
+          git fetch --force origin "refs/tags/v${VERSION}:refs/tags/v${VERSION}"
+          git checkout "v${VERSION}"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Resolve Python tag
+        run: |
+          python_tag="cp$(printf '%s' '${{ matrix.python-version }}' | tr -d '.')"
+          echo "PY_TAG=${python_tag}-${python_tag}-linux_x86_64" >> "$GITHUB_ENV"
+
+      - name: Download, install, and verify Python wheel
+        run: |
+          asset="rcore_sdk_py-${VERSION}-${PY_TAG}.whl"
+          curl -L --fail --show-error \
+            "https://github.com/smore-robotics/smrcore_sdk/releases/download/v${VERSION}/${asset}" \
+            -o "${asset}"
+          python -m pip install "./${asset}"
+          python - <<'PY'
+          import os
+          import rcore_sdk
+          from rcore_sdk import _native
+
+          version = os.environ["VERSION"]
+          info = _native.linked_sdk()
+          print(info)
+          assert rcore_sdk.__version__ == version
+          assert info["linked"] is True
+          assert info["version"] == version
+          PY
+
+      - name: Check Python examples
+        run: ./scripts/check_python_examples.sh
+
+  windows-python-wheel-smoke:
+    runs-on: windows-2022
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Resolve version
         shell: pwsh
         run: |
-          $pyTag = "cp310-cp310-win_amd64"
-          $asset = "rcore_sdk_py-$env:VERSION-$pyTag.whl"
+          $version = "${{ github.event.inputs.version }}".TrimStart("v")
+          "VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Checkout release tag
+        shell: pwsh
+        run: |
+          git fetch --force origin "refs/tags/v$env:VERSION`:refs/tags/v$env:VERSION"
+          git checkout "v$env:VERSION"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Resolve Python tag
+        shell: pwsh
+        run: |
+          $pythonTag = "cp$(('${{ matrix.python-version }}').Replace('.', ''))"
+          "PY_TAG=$pythonTag-$pythonTag-win_amd64" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Download, install, and verify Python wheel
+        shell: pwsh
+        run: |
+          $asset = "rcore_sdk_py-$env:VERSION-$env:PY_TAG.whl"
           $url = "https://github.com/smore-robotics/smrcore_sdk/releases/download/v$env:VERSION/$asset"
           curl.exe -L --fail --show-error $url -o $asset
-
-      - name: Install and verify Python wheel
-        shell: pwsh
-        run: |
-          python -m pip install ".\rcore_sdk_py-$env:VERSION-cp310-cp310-win_amd64.whl"
+          python -m pip install ".\$asset"
           python -c "import os, rcore_sdk; from rcore_sdk import _native; info = _native.linked_sdk(); print(info); assert rcore_sdk.__version__ == os.environ['VERSION']; assert info['linked'] is True; assert info['version'] == os.environ['VERSION']"
 
       - name: Check Python examples

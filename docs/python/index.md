@@ -23,12 +23,13 @@ The Python binding has its own conventions, summarised on the
 
 ## Install
 
-Install the wheel matching your Python ABI and platform directly from a GitHub
-Release:
+Wheels are available for CPython 3.10, 3.11, and 3.12 on Linux and Windows
+x86_64. Install the wheel matching your Python ABI and platform directly from
+a GitHub Release:
 
 ```bash
 VERSION=0.0.3  # replace with the release version you use
-PY_TAG=cp310-cp310-linux_x86_64   # Windows: cp310-cp310-win_amd64
+PY_TAG=cp310-cp310-linux_x86_64   # Python 3.10; Windows: cp310-cp310-win_amd64
 python3 -m pip install \
   "https://github.com/smore-robotics/smrcore_sdk/releases/download/v${VERSION}/rcore_sdk_py-${VERSION}-${PY_TAG}.whl"
 ```

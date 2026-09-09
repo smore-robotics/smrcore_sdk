@@ -62,8 +62,10 @@ Expected official release assets:
 
 - `smrcore_sdk-cpp-linux-x86_64-v<version>.tar.gz`
 - `smrcore_sdk-cpp-windows-x86_64-v<version>.tar.gz`
-- Linux Python wheel, for example `rcore_sdk_py-<version>-cp310-cp310-linux_x86_64.whl`
-- Windows Python wheel, for example `rcore_sdk_py-<version>-cp310-cp310-win_amd64.whl`
+- Linux Python wheels for CPython 3.10–3.12, for example
+  `rcore_sdk_py-<version>-cp310-cp310-linux_x86_64.whl`
+- Windows Python wheels for CPython 3.10–3.12, for example
+  `rcore_sdk_py-<version>-cp310-cp310-win_amd64.whl`
 - `smrcore-simulator-linux-x86_64-v<version>.tar.gz` (local simulator;
   lets users run examples without hardware)
 - `smrcore_sdk-docs-zh-v<version>.pdf`
