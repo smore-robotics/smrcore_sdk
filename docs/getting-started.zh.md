@@ -30,13 +30,13 @@ SDK 制品发布在 GitHub Releases：
 https://github.com/smore-robotics/smrcore_sdk/releases
 ```
 
-每个版本包含 C++ SDK 压缩包、Python wheel、本机模拟器和文档 PDF：
+每个版本包含 C++ SDK 压缩包、Python wheels、本机模拟器和文档 PDF：
 
 | 制品 | 说明 |
 |---|---|
 | `smrcore_sdk-cpp-linux-x86_64-v<version>.tar.gz` | Linux x86_64 的 C++ SDK |
 | `smrcore_sdk-cpp-windows-x86_64-v<version>.tar.gz` | Windows x86_64 的 C++ SDK |
-| `rcore_sdk_py-<version>-<python-tags>.whl` | Python wheel（按 Python ABI / 平台） |
+| `rcore_sdk_py-<version>-<python-tags>.whl` | Linux/Windows x86_64 的 Python 3.10–3.12 wheel |
 | `smrcore-simulator-linux-x86_64-v<version>.tar.gz` | 本机模拟器，见[没有真机？使用模拟器](#simulator) |
 | `smrcore_sdk-docs-zh-v<version>.pdf` | 中文文档（即本手册） |
 
@@ -120,11 +120,13 @@ int main()
 
 ### 安装 wheel
 
-下载与 Python ABI 和平台匹配的 wheel：
+预编译 wheel 支持 Linux 和 Windows x86_64 上的 CPython 3.10、3.11
+和 3.12。请下载与 Python ABI 和平台匹配的 wheel（`cp310`、
+`cp311` 或 `cp312`）：
 
 ```bash
 VERSION=0.0.3  # 替换为你所使用的 SDK 版本
-PY_TAG=cp310-cp310-linux_x86_64   # Windows: cp310-cp310-win_amd64
+PY_TAG=cp310-cp310-linux_x86_64   # Python 3.10；Windows: cp310-cp310-win_amd64
 curl -L --fail \
   "https://github.com/smore-robotics/smrcore_sdk/releases/download/v${VERSION}/rcore_sdk_py-${VERSION}-${PY_TAG}.whl" \
   -o rcore_sdk_py-${VERSION}-${PY_TAG}.whl
@@ -218,7 +220,7 @@ C++ 示例同理：`./build/basics_connect`（不传 `--robot-ip` 参数）。
 | 组件 | 平台 |
 |---|---|
 | C++ SDK | Linux x86_64、Windows x86_64 |
-| Python wheel | 与平台和 Python ABI 相关 |
+| Python wheel | CPython 3.10–3.12；Linux/Windows x86_64 |
 | C++ 标准 | C++17 |
 | CMake | 3.16 或更新 |
 
@@ -250,8 +252,9 @@ lib/cmake/smrcore_sdk/smrcore_sdkConfig.cmake
 
 ### Python Wheel 无法安装
 
-请使用与 Python ABI 和平台匹配的 wheel。例如
-`cp310-cp310-linux_x86_64` 需要 Linux x86_64 上的 CPython 3.10。
+请使用与 Python ABI 和平台匹配的 wheel。`cp310`、`cp311` 和
+`cp312` 分别对应 CPython 3.10、3.11 和 3.12；平台请选择
+`linux_x86_64` 或 `win_amd64`。
 
 ### 版本不匹配
 

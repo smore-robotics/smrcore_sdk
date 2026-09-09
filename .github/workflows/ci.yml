@@ -53,33 +53,6 @@ jobs:
           ldd build/motion_movej | grep librcoresdk
           ldd build/motion_movel | grep librcoresdk
 
-      - name: Download Python wheel
-        run: |
-          PY_TAG=cp310-cp310-linux_x86_64
-          curl -L --fail --show-error \
-            "https://github.com/smore-robotics/smrcore_sdk/releases/download/${RELEASE_TAG}/rcore_sdk_py-${VERSION}-${PY_TAG}.whl" \
-            -o "rcore_sdk_py-${VERSION}-${PY_TAG}.whl"
-
-      - name: Install and verify Python wheel
-        run: |
-          python3 -m pip install "./rcore_sdk_py-${VERSION}-cp310-cp310-linux_x86_64.whl"
-          python3 - <<'PY'
-          import os
-          import rcore_sdk
-          from rcore_sdk import _native
-
-          version = os.environ["VERSION"]
-          info = _native.linked_sdk()
-          print(info)
-
-          assert rcore_sdk.__version__ == version
-          assert info["linked"] is True
-          assert info["version"] == version
-          PY
-
-      - name: Check Python examples
-        run: ./scripts/check_python_examples.sh
-
       # Run the stable example subset against the packaged simulator.
       # Since 0.0.3, simulator assets are part of the release contract.
       - name: Download simulator
@@ -91,7 +64,7 @@ jobs:
           echo "SIM_DIR=$PWD/smrcore-simulator" >> "$GITHUB_ENV"
 
       - name: Run examples against simulator
-        run: SIM_DIR="$SIM_DIR" ./scripts/run_examples_against_sim.sh
+        run: EXAMPLE_KIND=cpp SIM_DIR="$SIM_DIR" ./scripts/run_examples_against_sim.sh
 
   windows-sdk-smoke:
     if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
@@ -100,11 +73,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.10"
 
       - name: Resolve SDK version
         shell: pwsh
@@ -146,18 +114,99 @@ jobs:
             }
           }
 
-      - name: Download Python wheel
-        shell: pwsh
-        run: |
-          $pyTag = "cp310-cp310-win_amd64"
-          $asset = "rcore_sdk_py-$env:VERSION-$pyTag.whl"
-          $url = "https://github.com/smore-robotics/smrcore_sdk/releases/download/$env:RELEASE_TAG/$asset"
-          curl.exe -L --fail --show-error $url -o $asset
+  linux-python-wheel-smoke:
+    if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
 
-      - name: Install and verify Python wheel
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install simulator runtime
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends libgl1
+
+      - name: Resolve SDK and Python versions
+        run: |
+          version="$(tr -d '[:space:]' < .sdk-version)"
+          python_tag="cp$(printf '%s' '${{ matrix.python-version }}' | tr -d '.')"
+          echo "VERSION=$version" >> "$GITHUB_ENV"
+          echo "PY_TAG=${python_tag}-${python_tag}-linux_x86_64" >> "$GITHUB_ENV"
+
+      - name: Download, install, and verify Python wheel
+        run: |
+          asset="rcore_sdk_py-${VERSION}-${PY_TAG}.whl"
+          curl -L --fail --show-error \
+            "https://github.com/smore-robotics/smrcore_sdk/releases/download/prerelease/${asset}" \
+            -o "${asset}"
+          python -m pip install "./${asset}"
+          python - <<'PY'
+          import os
+          import rcore_sdk
+          from rcore_sdk import _native
+
+          version = os.environ["VERSION"]
+          info = _native.linked_sdk()
+          print(info)
+          assert rcore_sdk.__version__ == version
+          assert info["linked"] is True
+          assert info["version"] == version
+          PY
+
+      - name: Check Python examples
+        run: ./scripts/check_python_examples.sh
+
+      - name: Download simulator
+        run: |
+          asset="smrcore-simulator-linux-x86_64-v${VERSION}.tar.gz"
+          curl -L --fail --show-error \
+            "https://github.com/smore-robotics/smrcore_sdk/releases/download/prerelease/${asset}" \
+            -o "${asset}"
+          tar -xzf "${asset}"
+
+      - name: Run Python examples against simulator
+        run: EXAMPLE_KIND=py SIM_DIR="$PWD/smrcore-simulator" ./scripts/run_examples_against_sim.sh
+
+  windows-python-wheel-smoke:
+    if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+    runs-on: windows-2022
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Resolve SDK and Python versions
         shell: pwsh
         run: |
-          python -m pip install ".\rcore_sdk_py-$env:VERSION-cp310-cp310-win_amd64.whl"
+          $version = (Get-Content .sdk-version -Raw).Trim()
+          $pythonTag = "cp$(('${{ matrix.python-version }}').Replace('.', ''))"
+          "VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "PY_TAG=$pythonTag-$pythonTag-win_amd64" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Download, install, and verify Python wheel
+        shell: pwsh
+        run: |
+          $asset = "rcore_sdk_py-$env:VERSION-$env:PY_TAG.whl"
+          $url = "https://github.com/smore-robotics/smrcore_sdk/releases/download/prerelease/$asset"
+          curl.exe -L --fail --show-error $url -o $asset
+          python -m pip install ".\$asset"
           python -c "import os, rcore_sdk; from rcore_sdk import _native; info = _native.linked_sdk(); print(info); assert rcore_sdk.__version__ == os.environ['VERSION']; assert info['linked'] is True; assert info['version'] == os.environ['VERSION']"
 
       - name: Check Python examples

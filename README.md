@@ -48,9 +48,13 @@ cd smrcore_sdk
 
 ### Python
 
+Prebuilt wheels support CPython 3.10, 3.11, and 3.12 on Linux and Windows
+x86_64. Select the tag matching your interpreter and platform (`cp310`,
+`cp311`, or `cp312`):
+
 ```bash
 VERSION=0.0.3  # replace with the release version you use
-PY_TAG=cp310-cp310-linux_x86_64   # Windows: cp310-cp310-win_amd64
+PY_TAG=cp310-cp310-linux_x86_64   # Python 3.10; Windows: cp310-cp310-win_amd64
 curl -L -O "https://github.com/smore-robotics/smrcore_sdk/releases/download/v${VERSION}/rcore_sdk_py-${VERSION}-${PY_TAG}.whl"
 python3 -m pip install "./rcore_sdk_py-${VERSION}-${PY_TAG}.whl"
 
@@ -69,7 +73,7 @@ Release assets are published on the
 |---|---|
 | `smrcore_sdk-cpp-linux-x86_64-v<version>.tar.gz` | C++ SDK for Linux x86_64 |
 | `smrcore_sdk-cpp-windows-x86_64-v<version>.tar.gz` | C++ SDK for Windows x86_64 |
-| `rcore_sdk_py-<version>-<python-tags>.whl` | Python wheel (per Python ABI / platform) |
+| `rcore_sdk_py-<version>-<python-tags>.whl` | Python 3.10–3.12 wheels for Linux/Windows x86_64 |
 | `smrcore-simulator-linux-x86_64-v<version>.tar.gz` | Local simulator — run examples without hardware |
 | `smrcore_sdk-docs-zh-v<version>.pdf` | Chinese documentation PDF |
 

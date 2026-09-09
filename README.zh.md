@@ -46,9 +46,12 @@ cd smrcore_sdk
 
 ### Python
 
+预编译 wheel 支持 Linux 和 Windows x86_64 上的 CPython 3.10、3.11 和
+3.12。请根据解释器和平台选择对应标签（`cp310`、`cp311` 或 `cp312`）：
+
 ```bash
 VERSION=0.0.3  # 替换为你所使用的 SDK 版本
-PY_TAG=cp310-cp310-linux_x86_64   # Windows: cp310-cp310-win_amd64
+PY_TAG=cp310-cp310-linux_x86_64   # Python 3.10；Windows: cp310-cp310-win_amd64
 curl -L -O "https://github.com/smore-robotics/smrcore_sdk/releases/download/v${VERSION}/rcore_sdk_py-${VERSION}-${PY_TAG}.whl"
 python3 -m pip install "./rcore_sdk_py-${VERSION}-${PY_TAG}.whl"
 
@@ -67,7 +70,8 @@ Release 制品发布在
 |---|---|
 | `smrcore_sdk-cpp-linux-x86_64-v<version>.tar.gz` | Linux x86_64 的 C++ SDK |
 | `smrcore_sdk-cpp-windows-x86_64-v<version>.tar.gz` | Windows x86_64 的 C++ SDK |
-| `rcore_sdk_py-<version>-<python-tags>.whl` | Python wheel（按 Python ABI / 平台） |
+| `rcore_sdk_py-<version>-<python-tags>.whl` | Linux/Windows x86_64 的 Python 3.10–3.12 wheel |
+| `smrcore-simulator-linux-x86_64-v<version>.tar.gz` | 本机模拟器，无需真机即可运行示例 |
 | `smrcore_sdk-docs-zh-v<version>.pdf` | 中文文档 PDF |
 
 ## 安全提示

@@ -31,14 +31,14 @@ SDK assets are published on GitHub Releases:
 https://github.com/smore-robotics/smrcore_sdk/releases
 ```
 
-Each release contains C++ SDK archives, a Python wheel, a local simulator,
+Each release contains C++ SDK archives, Python wheels, a local simulator,
 and the documentation PDF:
 
 | Asset | Description |
 |---|---|
 | `smrcore_sdk-cpp-linux-x86_64-v<version>.tar.gz` | C++ SDK for Linux x86_64 |
 | `smrcore_sdk-cpp-windows-x86_64-v<version>.tar.gz` | C++ SDK for Windows x86_64 |
-| `rcore_sdk_py-<version>-<python-tags>.whl` | Python wheel (per Python ABI / platform) |
+| `rcore_sdk_py-<version>-<python-tags>.whl` | Python 3.10–3.12 wheels for Linux/Windows x86_64 |
 | `smrcore-simulator-linux-x86_64-v<version>.tar.gz` | Local simulator — see [No Robot? Use the Simulator](#simulator) |
 | `smrcore_sdk-docs-zh-v<version>.pdf` | Chinese documentation (this manual) |
 
@@ -123,11 +123,13 @@ int main()
 
 ### Install Wheel
 
-Download the wheel matching your Python ABI and platform:
+Prebuilt wheels support CPython 3.10, 3.11, and 3.12 on Linux and Windows
+x86_64. Download the wheel matching your Python ABI and platform (`cp310`,
+`cp311`, or `cp312`):
 
 ```bash
 VERSION=0.0.3  # replace with the release version you use
-PY_TAG=cp310-cp310-linux_x86_64   # Windows: cp310-cp310-win_amd64
+PY_TAG=cp310-cp310-linux_x86_64   # Python 3.10; Windows: cp310-cp310-win_amd64
 curl -L --fail \
   "https://github.com/smore-robotics/smrcore_sdk/releases/download/v${VERSION}/rcore_sdk_py-${VERSION}-${PY_TAG}.whl" \
   -o rcore_sdk_py-${VERSION}-${PY_TAG}.whl
@@ -226,7 +228,7 @@ directly against the simulator.
 | Component | Platform |
 |---|---|
 | C++ SDK | Linux x86_64, Windows x86_64 |
-| Python wheel | Platform and Python ABI specific |
+| Python wheel | CPython 3.10–3.12; Linux/Windows x86_64 |
 | C++ standard | C++17 |
 | CMake | 3.16 or newer |
 
@@ -258,8 +260,9 @@ lib/cmake/smrcore_sdk/smrcore_sdkConfig.cmake
 
 ### Python Wheel Does Not Install
 
-Use a wheel matching your Python ABI and platform. For example,
-`cp310-cp310-linux_x86_64` requires CPython 3.10 on Linux x86_64.
+Use a wheel matching your Python ABI and platform. The `cp310`, `cp311`, and
+`cp312` tags require CPython 3.10, 3.11, and 3.12 respectively; select
+`linux_x86_64` or `win_amd64` for your platform.
 
 ### Version Mismatch
 
