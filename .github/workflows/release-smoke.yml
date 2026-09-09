@@ -56,16 +56,6 @@ jobs:
           ldd build/motion_movej | grep librcoresdk
           ldd build/motion_movel | grep librcoresdk
 
-      # The simulator suite also runs Python examples. The Python matrix below
-      # validates every wheel; install cp310 here solely for simulator coverage.
-      - name: Install Python wheel for simulator tests
-        run: |
-          asset="rcore_sdk_py-${VERSION}-cp310-cp310-linux_x86_64.whl"
-          curl -L --fail --show-error \
-            "https://github.com/smore-robotics/smrcore_sdk/releases/download/v${VERSION}/${asset}" \
-            -o "${asset}"
-          python3 -m pip install "./${asset}"
-
       # SDK <-> simulator pairing test: run the stable example subset against
       # the released simulator. Unlike PR CI, this is a hard requirement for
       # official releases - missing asset or VERSION mismatch fails the smoke.
@@ -83,7 +73,7 @@ jobs:
           fi
 
       - name: Run examples against simulator
-        run: SIM_DIR="$PWD/smrcore-simulator" ./scripts/run_examples_against_sim.sh
+        run: EXAMPLE_KIND=cpp SIM_DIR="$PWD/smrcore-simulator" ./scripts/run_examples_against_sim.sh
 
   windows-release-smoke:
     runs-on: windows-2022
@@ -164,6 +154,9 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+      - name: Install simulator runtime
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends libgl1
+
       - name: Resolve Python tag
         run: |
           python_tag="cp$(printf '%s' '${{ matrix.python-version }}' | tr -d '.')"
@@ -191,6 +184,18 @@ jobs:
 
       - name: Check Python examples
         run: ./scripts/check_python_examples.sh
+
+      - name: Download simulator
+        run: |
+          asset="smrcore-simulator-linux-x86_64-v${VERSION}.tar.gz"
+          curl -L --fail --show-error \
+            "https://github.com/smore-robotics/smrcore_sdk/releases/download/v${VERSION}/${asset}" \
+            -o "${asset}"
+          tar -xzf "${asset}"
+          test "$(tr -d '[:space:]' < smrcore-simulator/VERSION)" = "${VERSION}"
+
+      - name: Run Python examples against simulator
+        run: EXAMPLE_KIND=py SIM_DIR="$PWD/smrcore-simulator" ./scripts/run_examples_against_sim.sh
 
   windows-python-wheel-smoke:
     runs-on: windows-2022

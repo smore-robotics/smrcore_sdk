@@ -5,6 +5,8 @@ set -euo pipefail
 #
 # Usage:
 #   SIM_DIR=/path/to/smrcore-simulator ./scripts/run_examples_against_sim.sh
+#   EXAMPLE_KIND=cpp ...  # run only C++ examples
+#   EXAMPLE_KIND=py  ...  # run only Python examples
 #
 # Requirements:
 #   - C++ examples built under ./build (scripts/build.sh)
@@ -24,6 +26,7 @@ ROOT_DIR="$(cd "${SCRIPT_DIR}/.." && pwd -P)"
 SIM_DIR="${SIM_DIR:-}"
 SIM_LOG="${SIM_LOG:-/tmp/smrcore_simulator.log}"
 EXAMPLE_TIMEOUT="${EXAMPLE_TIMEOUT:-120}"
+EXAMPLE_KIND="${EXAMPLE_KIND:-all}"
 
 # Stable example subset run against the simulator.
 # Entry format: "<cpp|py> <binary under build/ | path to .py>"
@@ -66,7 +69,16 @@ fail() {
 
 [[ -n "${SIM_DIR}" ]] || fail "SIM_DIR is not set"
 [[ -x "${SIM_DIR}/run_simulator.sh" ]] || fail "missing ${SIM_DIR}/run_simulator.sh"
-[[ -x "${ROOT_DIR}/build/basics_connect" ]] || fail "C++ examples not built (run scripts/build.sh first)"
+[[ "${EXAMPLE_KIND}" =~ ^(all|cpp|py)$ ]] || fail "EXAMPLE_KIND must be all, cpp, or py"
+if [[ "${EXAMPLE_KIND}" != "py" ]]; then
+    [[ -x "${ROOT_DIR}/build/basics_connect" ]] || fail "C++ examples not built (run scripts/build.sh first)"
+fi
+
+if [[ "${EXAMPLE_KIND}" == "py" ]]; then
+    readiness_cmd=(python "${ROOT_DIR}/examples_py/basics/connect.py")
+else
+    readiness_cmd=("${ROOT_DIR}/build/basics_connect")
+fi
 
 # A second simulator on the same DDS domain makes examples talk to a mix of
 # both instances, causing baffling intermittent failures. Refuse to start.
@@ -101,7 +113,7 @@ echo "-> waiting for simulator readiness"
 ready=0
 for _ in $(seq 1 6); do
     kill -0 "${SIM_PID}" 2>/dev/null || { dump_logs; fail "simulator exited during startup"; }
-    if timeout 10 "${ROOT_DIR}/build/basics_connect" >/dev/null 2>&1; then
+    if timeout 10 "${readiness_cmd[@]}" >/dev/null 2>&1; then
         ready=1
         break
     fi
@@ -118,11 +130,16 @@ run_one() {
     # generously: the controller may keep the previous client's task listed
     # as active for several seconds after its Shutdown, rejecting new Move
     # commands ("存在活动任务") until it clears.
-    if [[ "${target}" != "basics_connect" ]]; then
+    if [[ "${target}" != "basics_connect" && "${target}" != "examples_py/basics/connect.py" ]]; then
         local reset_ok=0
         for _ in 1 2 3 4 5; do
-            if timeout "${EXAMPLE_TIMEOUT}" "${ROOT_DIR}/build/motion_movej" \
-                >/tmp/sim_pose_reset.log 2>&1; then
+            local -a reset_cmd
+            if [[ "${kind}" == "py" ]]; then
+                reset_cmd=(python "${ROOT_DIR}/examples_py/motion/movej.py")
+            else
+                reset_cmd=("${ROOT_DIR}/build/motion_movej")
+            fi
+            if timeout "${EXAMPLE_TIMEOUT}" "${reset_cmd[@]}" >/tmp/sim_pose_reset.log 2>&1; then
                 reset_ok=1
                 break
             fi
@@ -143,7 +160,7 @@ run_one() {
     local rc=0
     case "${kind}" in
         cpp) timeout "${EXAMPLE_TIMEOUT}" "${ROOT_DIR}/build/${target}" >"${log}" 2>&1 || rc=$? ;;
-        py)  timeout "${EXAMPLE_TIMEOUT}" python3 "${ROOT_DIR}/${target}" >"${log}" 2>&1 || rc=$? ;;
+        py)  timeout "${EXAMPLE_TIMEOUT}" python "${ROOT_DIR}/${target}" >"${log}" 2>&1 || rc=$? ;;
         *)   fail "unknown example kind: ${kind}" ;;
     esac
     if [[ "${rc}" != "0" ]]; then
@@ -159,7 +176,11 @@ run_one() {
 
 count=0
 for entry in "${EXAMPLES[@]}"; do
-    run_one "${entry%% *}" "${entry#* }"
+    kind="${entry%% *}"
+    if [[ "${EXAMPLE_KIND}" != "all" && "${kind}" != "${EXAMPLE_KIND}" ]]; then
+        continue
+    fi
+    run_one "${kind}" "${entry#* }"
     count=$((count + 1))
 done
 

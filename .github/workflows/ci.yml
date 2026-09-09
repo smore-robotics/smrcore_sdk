@@ -53,16 +53,6 @@ jobs:
           ldd build/motion_movej | grep librcoresdk
           ldd build/motion_movel | grep librcoresdk
 
-      # The simulator suite also runs Python examples. The Python matrix below
-      # validates every wheel; install cp310 here solely for simulator coverage.
-      - name: Install Python wheel for simulator tests
-        run: |
-          asset="rcore_sdk_py-${VERSION}-cp310-cp310-linux_x86_64.whl"
-          curl -L --fail --show-error \
-            "https://github.com/smore-robotics/smrcore_sdk/releases/download/${RELEASE_TAG}/${asset}" \
-            -o "${asset}"
-          python3 -m pip install "./${asset}"
-
       # Run the stable example subset against the packaged simulator.
       # Since 0.0.3, simulator assets are part of the release contract.
       - name: Download simulator
@@ -74,7 +64,7 @@ jobs:
           echo "SIM_DIR=$PWD/smrcore-simulator" >> "$GITHUB_ENV"
 
       - name: Run examples against simulator
-        run: SIM_DIR="$SIM_DIR" ./scripts/run_examples_against_sim.sh
+        run: EXAMPLE_KIND=cpp SIM_DIR="$SIM_DIR" ./scripts/run_examples_against_sim.sh
 
   windows-sdk-smoke:
     if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
@@ -141,6 +131,9 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+      - name: Install simulator runtime
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends libgl1
+
       - name: Resolve SDK and Python versions
         run: |
           version="$(tr -d '[:space:]' < .sdk-version)"
@@ -170,6 +163,17 @@ jobs:
 
       - name: Check Python examples
         run: ./scripts/check_python_examples.sh
+
+      - name: Download simulator
+        run: |
+          asset="smrcore-simulator-linux-x86_64-v${VERSION}.tar.gz"
+          curl -L --fail --show-error \
+            "https://github.com/smore-robotics/smrcore_sdk/releases/download/prerelease/${asset}" \
+            -o "${asset}"
+          tar -xzf "${asset}"
+
+      - name: Run Python examples against simulator
+        run: EXAMPLE_KIND=py SIM_DIR="$PWD/smrcore-simulator" ./scripts/run_examples_against_sim.sh
 
   windows-python-wheel-smoke:
     if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
