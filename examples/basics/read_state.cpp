@@ -82,6 +82,22 @@ int main(int argc, char **argv)
                 motor.error ? "true" : "false",
                 motor.operational ? "true" : "false");
 
+    // Loaded motor configuration, not live PDO/SDO feedback (SDK 0.2.0).
+    const auto parameters = robot.GetMotorParameters();
+    if (parameters.valid)
+    {
+        for (size_t i = 0; i < parameters.axes.size(); ++i)
+        {
+            const auto &axis = parameters.axes[i];
+            std::printf("J%zu gear ratio=%.3f rated=%.3f peak=%.3f [N*m]\n",
+                        i + 1, axis.gear_ratio, axis.rated_torque, axis.peak_torque);
+        }
+    }
+    else
+    {
+        std::fprintf(stderr, "Motor parameters unavailable; ignoring default values\n");
+    }
+
     robot.Shutdown();
     return 0;
 }
