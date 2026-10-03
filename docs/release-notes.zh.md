@@ -10,7 +10,8 @@
 - C++ `robot.MoveJ(std::vector<JointWaypoint>)` 和 Python
   `robot.MoveJWaypoints(waypoints)` 支持 1–64 个精确关节位置、速度、加速度
   边界，末点必须停止。位置单位 rad，速度 rad/s，加速度 rad/s²，点前/点后
-  最小恒速窗口单位 s。`trigger_capture` 默认 false，与恒速窗口独立。
+  最小恒速窗口单位 s。C++ waypoint 的 `trigger_capture` 默认 false，
+  与恒速窗口独立；0.2.0 Python 绑定未转发该字段。
 - C++ `robot.Planning().PlanJointPath(goal, options)` 和 Python
   `robot.PlanJointPath(goal, options)` 从最新机器人状态规划路径，不执行运动。
   应检查返回状态，执行前重新核实 `scene_generation`。可选逐轴范围单位为 rad，
@@ -38,7 +39,6 @@
 - C++ `Config().GetGravityVector(out)` 能报告失败，失败时不覆盖 `out`。
   Python `GetGravityVectorResult()` 返回 `(Result, value)`。标定前须检查结果；
   旧的仅返回值接口仍保留。
-- 转换已保存的工具碰撞几何时，primitive 数量现在限制在支持的容量内。
 
 ### Python 调用形式
 

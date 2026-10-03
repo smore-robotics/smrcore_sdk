@@ -11,8 +11,9 @@ These changes are cumulative since 0.1.2 and include the APIs introduced in
   `robot.MoveJWaypoints(waypoints)` accept 1–64 exact joint position, velocity,
   and acceleration boundaries. The last waypoint must stop. Positions use
   radians, velocities rad/s, accelerations rad/s²; the before/after constant
-  velocity windows use seconds. `trigger_capture` defaults to false and is
-  independent of these windows.
+  velocity windows use seconds. The C++ waypoint's `trigger_capture` defaults
+  to false and is independent of these windows; the 0.2.0 Python binding does
+  not forward this field.
 - C++ `robot.Planning().PlanJointPath(goal, options)` and Python
   `robot.PlanJointPath(goal, options)` plan from the latest robot state without
   executing motion. Check the returned status and revalidate `scene_generation`
@@ -46,8 +47,6 @@ These changes are cumulative since 0.1.2 and include the APIs introduced in
 - C++ `Config().GetGravityVector(out)` reports failure without replacing `out`.
   Python `GetGravityVectorResult()` returns `(Result, value)`. Check the result
   before calibration; the older value-only calls remain available.
-- Conversion of stored tool collision geometry now caps the primitive count
-  at the supported capacity.
 
 ### Python calling style
 
