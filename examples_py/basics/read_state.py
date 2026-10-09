@@ -64,6 +64,17 @@ def main():
         f"error={motor.error} operational={motor.operational}"
     )
 
+    # Loaded configuration; torques refer to the joint output, not the rotor.
+    parameters = robot.GetMotorParameters()
+    if parameters.valid:
+        for i, axis in enumerate(parameters.axes, start=1):
+            print(
+                f"J{i} gear ratio={axis.gear_ratio:.3f} "
+                f"rated={axis.rated_torque:.3f} peak={axis.peak_torque:.3f} [N*m]"
+            )
+    else:
+        print("Motor parameters unavailable; ignoring default values", file=sys.stderr)
+
     robot.Shutdown()
     return 0
 
