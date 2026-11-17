@@ -1,5 +1,55 @@
 # Release Notes
 
+## 0.3.0
+
+Use the matching 0.3.0 C++ SDK, Python wheel, and simulator. The release
+includes Linux and Windows C++ packages and CPython 3.10–3.12 wheels for both
+platforms.
+
+### Projects and planning
+
+- The Projects API lists, uploads, downloads, loads, starts, and stops saved
+  projects. It can also resolve an uncertain start, wait for completion, and
+  read execution state and variable values. For project execution, select
+  the `ProjectExecution` connection purpose. Closing that connection does
+  not stop an accepted project. If a start response is lost, resolve or query
+  the original request before attempting another start.
+- Collision configuration supports tool OBJ meshes and managed `tool://`
+  references. `Capsule` remains the default self-collision precision.
+  `MeshRefined` applies to arm self-collision for supported i3/B3 Move and
+  planning paths. Servo and teleoperation continue to use capsule checks.
+- Joint path planning adds clearance and RRT range controls.
+  `ExecuteMoveJSegment` executes a segment from a still-valid planning
+  result. A planning call does not start motion. Replan if the cached result
+  is no longer valid. `collision_check_step_rad` defaults to zero and no
+  longer controls collision-check density.
+
+### Motion results and flyshot
+
+- `WaitFor(timeout_ms)` allows bounded waiting on an asynchronous result.
+  A timeout leaves the original task available for another poll. Check the
+  terminal result for success. Accepted multi-waypoint MoveJ calls expose
+  their own task ID in C++ (`GetTaskId()`) and Python (`task_id`).
+- Flyshot path prechecks return an assessment for the requested path.
+  Read the assessment even when the request itself succeeds. Python
+  `MoveJWaypoints` now forwards `trigger_capture`.
+- The default six-axis FreeDrive friction level changes from 70 to 90
+  when the caller omits it. Pass an explicit value to retain prior tuning.
+
+### End Board migration
+
+- ZX/DH gripper calls now take an explicit Modbus `slave_id`. Use
+  `RTU_ReadRegisters_03` for holding registers and `RTU_ReadRegisters_04`
+  for input registers. ZX and DH helpers read back position and the configured
+  speed and force. The previous request-only calls and ZX acceleration and
+  deceleration setters were removed.
+- C++ `RAW485_SendFrame` requires an explicit `append_crc` argument. Use
+  `WithResponses` to record the transaction's transmit and receive data.
+  Python retains `RAW485_Transceive` and defaults `RAW485_SendFrame` to
+  `append_crc=False` for a complete frame. The End Board APIs also expose
+  cached 485 mode state and separate RS485 frame-silence and first-byte
+  timing settings.
+
 ## 0.2.0
 
 These changes are cumulative since 0.1.2 and include the APIs introduced in

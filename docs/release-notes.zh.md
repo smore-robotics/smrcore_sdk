@@ -1,5 +1,44 @@
 # 版本说明
 
+## 0.3.0
+
+请配套使用 0.3.0 的 C++ SDK、Python wheel 与模拟器。本版提供 Linux 和
+Windows 的 C++ 包，以及两个平台的 CPython 3.10–3.12 wheel。
+
+### 工程与规划
+
+- 工程 API 支持浏览、上传、下载、加载、启动及停止已保存工程，也可复核结果
+  不确定的启动请求、等待完成、读取执行状态和变量。执行工程时选择
+  `ProjectExecution` 连接用途。关闭该连接不会停止已受理的工程。启动回包
+  丢失时，先复核或查询原请求，再决定是否重新启动。
+- 碰撞配置支持工具 OBJ 网格及受管 `tool://` 引用。自碰撞精度仍默认
+  `Capsule`。`MeshRefined` 适用于受支持的 i3/B3 Move 和规划中的臂内自碰撞
+  检查。Servo 与遥操作继续使用胶囊体检测。
+- 关节路径规划新增净空和 RRT 步长范围控制。`ExecuteMoveJSegment` 执行
+  仍有效的规划结果中的指定边。规划调用不会启动运动，缓存结果失效后应重新
+  规划。`collision_check_step_rad` 默认值为零，且已不再控制碰撞检查密度。
+
+### 运动结果与飞拍
+
+- 异步结果通过 `WaitFor(timeout_ms)` 限时等待。超时后可继续轮询同一任务。
+  读取终态后检查最终结果。已受理的多点 MoveJ 会保留本次任务号，C++ 通过
+  `GetTaskId()` 读取，Python 使用 `task_id`。
+- 飞拍路径预检返回所请求路径的评估。即使请求本身成功，也应读取评估结果。
+  Python 的 `MoveJWaypoints` 现在会转发 `trigger_capture`。
+- 未指定六轴 FreeDrive 摩擦等级时，默认值从 70 改为 90。需要沿用旧设置时
+  可显式传入原值。
+
+### 末端功能板迁移
+
+- ZX/DH 夹爪调用现在显式传入 Modbus `slave_id`。使用
+  `RTU_ReadRegisters_03` 读取保持寄存器，使用 `RTU_ReadRegisters_04` 读取
+  输入寄存器。两类夹爪均可读回位置和设定速度、设定力。旧的仅请求读取接口及
+  ZX 加速和减速设置接口已移除。
+- C++ `RAW485_SendFrame` 须显式传入 `append_crc`，可用 `WithResponses`
+  记录本次收发。Python 保留 `RAW485_Transceive`，发送完整帧时
+  `RAW485_SendFrame` 的 `append_crc` 默认为 `False`。末端功能板还提供
+  缓存的 485 模式状态，以及独立的 RS485 收帧静默时间和首字节等待设置。
+
 ## 0.2.0
 
 以下为相对 0.1.2 的累计变化，包含 0.2.0-rc.1 已引入的接口。

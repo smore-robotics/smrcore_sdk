@@ -1,4 +1,4 @@
-// end_board/io_state - read the end-board digital IO snapshot
+// end_board/io_state - read digital IO and cached 485 feedback
 //
 // Usage: ./end_board_io_state [--robot-ip <ip>]
 //   - Pass --robot-ip <ip>, such as 192.168.1.100, for a remote robot.
@@ -39,7 +39,8 @@ int main(int argc, char **argv)
     }
 
     rcore::sdk::EndBoardDigitalIoState state;
-    auto result = robot.EndBoard().IOGetDigitalIoState(state);
+    auto end_board = robot.EndBoard();
+    auto result = end_board.IOGetDigitalIoState(state);
     if (!result.IsSuccess())
     {
         std::fprintf(stderr, "IOGetDigitalIoState failed: code=%u msg=%s\n",
@@ -51,6 +52,11 @@ int main(int argc, char **argv)
     std::printf("DI bits=0x%02X, DO echo bits=0x%02X, timestamp=%.6f\n",
                 static_cast<unsigned>(state.di_bits),
                 static_cast<unsigned>(state.do_echo_bits), state.timestamp);
+
+    const auto feedback = end_board.GetEndBoard485ModeState();
+    std::printf("Cached 485 state: connected=%s, position=%.3f, speed=%.3f, force=%.3f\n",
+                feedback.connected ? "yes" : "no",
+                feedback.position, feedback.speed, feedback.force);
 
     robot.Shutdown();
     return 0;

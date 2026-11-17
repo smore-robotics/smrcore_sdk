@@ -1,4 +1,4 @@
-"""Read one end-board digital IO snapshot.
+"""Read digital IO and cached 485 feedback.
 
 Run::
 
@@ -24,7 +24,8 @@ def main() -> int:
             print("[FAIL] Initialize")
             return 1
 
-        result, state = robot.EndBoard().IOGetDigitalIoState()
+        end_board = robot.EndBoard()
+        result, state = end_board.IOGetDigitalIoState()
         if not result.success:
             print("[FAIL] IOGetDigitalIoState", result)
             return 1
@@ -35,6 +36,12 @@ def main() -> int:
             f"DI bits=0x{state.di_bits:02X}, "
             f"DO echo bits=0x{state.do_echo_bits:02X}, "
             f"timestamp={state.timestamp:.6f}"
+        )
+        feedback = end_board.GetEndBoard485ModeState()
+        print(
+            f"Cached 485 state: connected={feedback.connected}, "
+            f"position={feedback.position:.3f}, speed={feedback.speed:.3f}, "
+            f"force={feedback.force:.3f}"
         )
         return 0
     finally:

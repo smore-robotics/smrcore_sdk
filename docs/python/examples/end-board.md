@@ -20,8 +20,8 @@ two-channel digital IO.
 ### What It Does
 
 Reads one digital IO snapshot and prints the DI bitmap, output-state echo bitmap,
-and timestamp. This example is read-only and does not change an output or command
-a gripper.
+and timestamp. It also prints the cached 485 connection and feedback state.
+This example does not change an output or command a gripper.
 
 ```bash
 ROBOT_IP=192.168.1.100 python3 examples_py/end_board/io_state.py
@@ -59,26 +59,32 @@ if result:
     print(response.frame, response.rx_status)
 ```
 
-`EndBoardRaw485Response` contains `frame`, `rx_status`, `rx_seq`, and
-`echo_seq`. `EndBoardDigitalIoState` contains `di_bits`, `do_echo_bits`, and
-`timestamp`. Both are immutable data classes.
+`EndBoardRaw485Response` contains `frame`, `rx_status`, `rx_seq`, `echo_seq`,
+the transmitted request bytes in `tx_frame`, and the `attempted` and
+`response_received` flags. Check `Result` for transaction success.
+`EndBoardDigitalIoState` contains `di_bits`, `do_echo_bits`, and `timestamp`.
+Both are immutable data classes.
 
 ## Public API Groups
 
 | Group | Methods |
 |---|---|
-| RAW485 and board settings | `RAW485_SendFrame`, `RAW485_Transceive`, `RS485_SetBaudRate`, `Key_SetTiming` |
-| Generic Modbus RTU | `RTU_WriteSingleRegister`, `RTU_WriteMultipleRegisters`, `RTU_RequestReadHoldingRegisters` |
-| ZX gripper | `RTU_ZX_Enable`, `RTU_ZX_SetPosition`, `RTU_ZX_SetSpeed`, `RTU_ZX_SetForce`, `RTU_ZX_SetAccel`, `RTU_ZX_SetDecel`, `RTU_ZX_Trigger` |
-| DH gripper | `RTU_DH_Init`, `RTU_DH_SetForce`, `RTU_DH_SetPosition`, `RTU_DH_SetSpeed`, `RTU_DH_RequestEnableState`, `RTU_DH_RequestGripState`, `RTU_DH_RequestPosition` |
+| RAW485 and board settings | `RAW485_SendFrame`, `RAW485_Transceive`, `RS485_SetBaudRate`, `RS485_SetFrameSilenceUs`, `RS485_SetFirstByteTimeoutUs`, `Key_SetTiming` |
+| 485 feedback | `GetEndBoard485ModeState` |
+| Generic Modbus RTU | `RTU_WriteSingleRegister`, `RTU_WriteMultipleRegisters`, `RTU_ReadRegisters_03`, `RTU_ReadRegisters_04` |
+| ZX gripper | `RTU_ZX_Enable`, `RTU_ZX_SetPosition`, `RTU_ZX_SetSpeed`, `RTU_ZX_SetForce`, `RTU_ZX_Trigger`, `RTU_ZX_ReadPosition`, `RTU_ZX_ReadSpeed`, `RTU_ZX_ReadForce` |
+| DH gripper | `RTU_DH_Init`, `RTU_DH_SetForce`, `RTU_DH_SetPosition`, `RTU_DH_SetSpeed`, `RTU_DH_ReadPosition`, `RTU_DH_ReadSpeed`, `RTU_DH_ReadForce` |
 | Digital IO | `IOSetDigitalOutput`, `IOSetDigitalOutputs`, `IOGetDigitalInput`, `IOGetDigitalInputs`, `IOGetDigitalOutputEcho`, `IOGetDigitalIoState` |
 
 The parameter ranges and device-safety notes are the same as in the
 [C++ End Board guide](../../examples/end-board.md).
 
-`RTU_RequestReadHoldingRegisters` and the DH status-request helpers send a read
-request; they do not return decoded device values. Use `RAW485_Transceive` when
-your application needs to receive and decode a device-specific reply.
+Pass the device's Modbus `slave_id` explicitly for ZX and DH calls.
+`RTU_ReadRegisters_03` and `RTU_ReadRegisters_04` return
+`(Result, list[int])`. For a complete RAW485 frame use
+`RAW485_SendFrame(frame)`, which defaults to `append_crc=False`.
+`GetEndBoard485ModeState()` returns a cached `EndBoard485ModeState` directly.
+Unavailable feedback values are NaN.
 
 !!! warning "Device safety"
     Confirm the connected device manual before sending register writes. Use one
