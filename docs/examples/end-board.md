@@ -21,8 +21,9 @@ with `robot.EndBoard()` and use it only while its `Robot` is alive.
 ### What It Does
 
 Connects in end-board-only mode and reads one digital IO snapshot. The snapshot
-contains the DI bitmap, the output-state echo bitmap, and a timestamp. This
-example is read-only and does not change an output or command a gripper.
+contains the DI bitmap, the output-state echo bitmap, and a timestamp. The
+example also prints the cached 485 connection and feedback state. It does not
+change an output or command a gripper.
 
 Bits 0 and 1 correspond to channels 0 and 1. For example, `di_bits & 0x01`
 reads DI0 and `(do_echo_bits >> 1) & 0x01` reads the DO1 echo.
@@ -37,10 +38,11 @@ reads DI0 and `(do_echo_bits >> 1) & 0x01` reads the DO1 echo.
 
 | Group | Methods | Notes |
 |---|---|---|
-| RAW485 and board settings | `RAW485_SendFrame`, `RAW485_Transceive`, `RS485_SetBaudRate`, `Key_SetTiming` | Send complete frames or request/response transactions; configure communication and key timing |
-| Generic Modbus RTU | `RTU_WriteSingleRegister`, `RTU_WriteMultipleRegisters`, `RTU_RequestReadHoldingRegisters` | Common register writes and read requests |
-| ZX gripper | `RTU_ZX_Enable`, `RTU_ZX_SetPosition`, `RTU_ZX_SetSpeed`, `RTU_ZX_SetForce`, `RTU_ZX_SetAccel`, `RTU_ZX_SetDecel`, `RTU_ZX_Trigger` | ZX-specific convenience commands |
-| DH gripper | `RTU_DH_Init`, `RTU_DH_SetForce`, `RTU_DH_SetPosition`, `RTU_DH_SetSpeed`, `RTU_DH_RequestEnableState`, `RTU_DH_RequestGripState`, `RTU_DH_RequestPosition` | DH-specific commands and status requests |
+| RAW485 and board settings | `RAW485_SendFrame`, `WithResponses`, `RS485_SetBaudRate`, `RS485_SetFrameSilenceUs`, `RS485_SetFirstByteTimeoutUs`, `Key_SetTiming` | Synchronous frame exchange and board timing controls |
+| 485 feedback | `GetEndBoard485ModeState` | Read cached connection and feedback without polling the device |
+| Generic Modbus RTU | `RTU_WriteSingleRegister`, `RTU_WriteMultipleRegisters`, `RTU_ReadRegisters_03`, `RTU_ReadRegisters_04` | Write registers or read decoded holding and input registers |
+| ZX gripper | `RTU_ZX_Enable`, `RTU_ZX_SetPosition`, `RTU_ZX_SetSpeed`, `RTU_ZX_SetForce`, `RTU_ZX_Trigger`, `RTU_ZX_ReadPosition`, `RTU_ZX_ReadSpeed`, `RTU_ZX_ReadForce` | Pass the device's Modbus slave ID |
+| DH gripper | `RTU_DH_Init`, `RTU_DH_SetForce`, `RTU_DH_SetPosition`, `RTU_DH_SetSpeed`, `RTU_DH_ReadPosition`, `RTU_DH_ReadSpeed`, `RTU_DH_ReadForce` | Pass the device's Modbus slave ID |
 | Digital IO | `IOSetDigitalOutput`, `IOSetDigitalOutputs`, `IOGetDigitalInput`, `IOGetDigitalInputs`, `IOGetDigitalOutputEcho`, `IOGetDigitalIoState` | Two inputs, two outputs, and a combined snapshot |
 
 Read operations use an output parameter in C++:
@@ -55,29 +57,38 @@ if (!result.IsSuccess()) {
 }
 ```
 
-`RAW485_Transceive` returns the received bytes and board status in
-`EndBoardRaw485Response`. The transaction succeeds only when a matching response
-is received and `rx_status` indicates success.
+`RAW485_SendFrame(payload, append_crc)` waits for a matching reply. Pass
+`false` for a complete frame with its own CRC, or `true` for a payload that
+needs a CRC appended. To capture the transmit and receive bytes, use
+`end_board.WithResponses(exchange, timeout_ms)` with an
+`EndBoardRaw485Exchange` that outlives the returned handle. Keep one owner
+for each exchange record. Check the returned `Result` before
+using the response.
 
 ## Limits and Device Semantics
 
 | Item | Valid range or limit |
 |---|---|
 | RAW485 complete frame | 1 to 20 bytes |
+| RAW485 payload before appending CRC | 1 to 18 bytes |
 | RAW485 transaction timeout | 1 to 60000 ms |
 | RS485 baud rate | 1200 to 2000000; default 115200 |
+| RS485 frame silence / first-byte wait | 1 to 500000 µs each, default 5000 µs |
 | Key debounce | 1 to 255 ms |
 | Key long press | 100 to 25500 ms and a multiple of 100 |
 | Modbus slave ID | 1 to 247 |
 | Multiple-register write | 1 to 5 registers |
-| Holding-register read request | 1 to 7 registers |
+| Holding- or input-register read | 1 to 7 registers |
 | ZX speed and force | 0 to 100 |
 | DH force / position / speed | 20 to 100 / 0 to 1000 / 1 to 100 |
 | Digital IO index / output bitmap | channel 0 or 1 / `0x00` to `0x03` |
 
-`RTU_RequestReadHoldingRegisters` and the DH status-request helpers send a read
-request; they do not return decoded device values. Use the RAW485 response path
-when your application needs to receive and decode a device-specific reply.
+`RTU_ReadRegisters_03` and `RTU_ReadRegisters_04` validate and decode the
+reply. Check the returned result before reading the output vector. ZX/DH
+write acknowledgements confirm receipt of the command. Query device state
+separately for motion or initialization completion. Cached position is
+device feedback, while cached speed and force are the configured values
+read back from the device. Unavailable feedback is represented by NaN.
 
 !!! warning "Device safety"
     Register addresses and value meanings are device-specific. Confirm the

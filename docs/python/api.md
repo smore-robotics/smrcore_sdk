@@ -247,8 +247,8 @@ SpaceMouse teleop also requires
 ## End Board
 
 `robot.EndBoard()` returns the public facade for RAW485, Modbus RTU gripper
-helpers, and two-channel digital IO. Operation-only calls return `Result`; reads
-return `(Result, value)`:
+helpers, and two-channel digital IO. Commands return `Result`. Transaction
+reads return `(Result, value)`. The cached 485 state is returned directly.
 
 ```python
 end_board = robot.EndBoard()
@@ -256,6 +256,9 @@ end_board = robot.EndBoard()
 result, state = end_board.IOGetDigitalIoState()
 if result:
     print(state.di_bits, state.do_echo_bits, state.timestamp)
+
+feedback = end_board.GetEndBoard485ModeState()
+print(feedback.connected, feedback.position)
 
 result, response = end_board.RAW485_Transceive(
     bytes([0x01, 0x03, 0x00, 0x00, 0x00, 0x01]),
@@ -266,8 +269,9 @@ if result:
     print(response.frame)
 ```
 
-The returned immutable data types are `EndBoardDigitalIoState` and
-`EndBoardRaw485Response`. See [End Board Examples](examples/end-board.md) for
+The returned immutable data types are `EndBoardDigitalIoState`,
+`EndBoard485ModeState`, and `EndBoardRaw485Response`. See
+[End Board Examples](examples/end-board.md) for
 the complete public method map, parameter limits, and device-safety notes.
 
 ## Kinematics

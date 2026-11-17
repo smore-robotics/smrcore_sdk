@@ -239,7 +239,7 @@ SpaceMouse 遥操同样需要
 ## 末端功能板（End Board）
 
 `robot.EndBoard()` 返回 RAW485、Modbus RTU 夹爪便捷接口和两路数字 IO 的公开门面。
-只执行操作的调用返回 `Result`；读取操作返回 `(Result, value)`：
+命令返回 `Result`。事务读取返回 `(Result, value)`，缓存的 485 状态直接返回。
 
 ```python
 end_board = robot.EndBoard()
@@ -247,6 +247,9 @@ end_board = robot.EndBoard()
 result, state = end_board.IOGetDigitalIoState()
 if result:
     print(state.di_bits, state.do_echo_bits, state.timestamp)
+
+feedback = end_board.GetEndBoard485ModeState()
+print(feedback.connected, feedback.position)
 
 result, response = end_board.RAW485_Transceive(
     bytes([0x01, 0x03, 0x00, 0x00, 0x00, 0x01]),
@@ -257,7 +260,8 @@ if result:
     print(response.frame)
 ```
 
-返回的不可变数据类型为 `EndBoardDigitalIoState` 和 `EndBoardRaw485Response`。
+返回的不可变数据类型包括 `EndBoardDigitalIoState`、`EndBoard485ModeState`
+和 `EndBoardRaw485Response`。
 完整公开方法分组、参数限制和设备安全说明见[末端功能板示例](examples/end-board.md)。
 
 ## 运动学（Kinematics）
